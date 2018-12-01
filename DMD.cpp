@@ -10,7 +10,6 @@
 #include "mybutton.h"
 #include "nagdlg.h"
 #include "version.h"
-#include "LodePNG.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -105,10 +104,6 @@ void DMD::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(DMD)
-	DDX_Control(pDX, IDC_BUTTON_WIPE, m_Wipe);
-	DDX_Control(pDX, IDC_BUTTON_PREVIOUS_GRAPHICX2, m_PreviousGraphicX2);
-	DDX_Control(pDX, IDC_BUTTON_NEXT_GRAPHICX2, m_NextGraphicX2);
-	DDX_Control(pDX, IDC_CHECK_EXPORT, m_Export);
 	DDX_Control(pDX, IDC_STATIC_DMD3_HEADER, m_Dmd3Title);
 	DDX_Control(pDX, IDC_STATIC_DMD2_HEADER, m_Dmd2Title);
 	DDX_Control(pDX, IDC_STATIC_DMD1_HEADER, m_Dmd1Title);
@@ -135,7 +130,6 @@ BEGIN_MESSAGE_MAP(DMD, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_PREVIOUS_GRAPHIC, OnButtonPreviousGraphic)
 	ON_BN_CLICKED(IDC_CHECK_SKIPPED, OnCheckSkipped)
 	ON_BN_CLICKED(IDC_CHECK_XORED, OnCheckXored)
-	ON_BN_CLICKED(IDC_CHECK_EXPORT, OnCheckExport)
 	ON_LBN_SELCHANGE(IDC_LIST1, OnSelchangeList1)
 	ON_WM_CLOSE()
 	ON_WM_CTLCOLOR()
@@ -143,9 +137,6 @@ BEGIN_MESSAGE_MAP(DMD, CDialog)
 	ON_WM_TIMER()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
-	ON_BN_CLICKED(IDC_BUTTON_NEXT_GRAPHICX2, OnButtonNextGraphicx2)
-	ON_BN_CLICKED(IDC_BUTTON_PREVIOUS_GRAPHICX2, OnButtonPreviousGraphicx2)
-	ON_BN_CLICKED(IDC_BUTTON_WIPE, OnButtonWipe)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -214,10 +205,8 @@ BOOL DMD::OnInitDialog()
 	m_PixelColor.AddString("Violet");
 	m_PixelColor.SetTopIndex(PassedInPointer->PixelColor);
 	m_Spin.SetPos(PassedInPointer->PixelColor);
-/* // default: no checkbox, We now save previous frame pixel data
 	m_Xored.SetCheck(PassedInPointer->XoredCheckboxState);
 	m_Skipped.SetCheck(PassedInPointer->SkippedCheckboxState);
-*/
 
 	CString RegString;
 	RegString.Format("%s %.1f %s %s",APPLICATION_TITLE,APPLICATION_VERSION,APPLICATION_COPYRIGHT,APPLICATION_AUTHOR);
@@ -230,10 +219,8 @@ BOOL DMD::OnInitDialog()
 			GetDlgItem(IDC_STATIC_DMD1_HEADER)->SetWindowText("Medium Pixels Plane");
 			GetDlgItem(IDC_STATIC_DMD2_HEADER)->SetWindowText("Dim Pixels Plane");
 			GetDlgItem(IDC_STATIC_DMD3_HEADER)->SetWindowText("Blended Planes");
-			GetDlgItem(IDC_BUTTON_PREVIOUS_GRAPHIC)->SetWindowText("<- Prev");
-			GetDlgItem(IDC_BUTTON_NEXT_GRAPHIC)->SetWindowText("Next ->");
-			GetDlgItem(IDC_CHECK_XORED)->ShowWindow(SW_SHOW);
-			GetDlgItem(IDC_CHECK_SKIPPED)->ShowWindow(SW_SHOW);
+			GetDlgItem(IDC_BUTTON_PREVIOUS_GRAPHIC)->SetWindowText("<--Previous Graphic");
+			GetDlgItem(IDC_BUTTON_NEXT_GRAPHIC)->SetWindowText("Next Graphic -->");
 			WindowVerticalShift = 30;
 			WindowHorizontalShift = 20;
 			break;
@@ -244,8 +231,6 @@ BOOL DMD::OnInitDialog()
 			GetDlgItem(IDC_BUTTON_NEXT_GRAPHIC)->SetWindowText("Next Char -->");
 			GetDlgItem(IDC_CHECK_XORED)->ShowWindow(SW_HIDE);
 			GetDlgItem(IDC_CHECK_SKIPPED)->ShowWindow(SW_HIDE);
-			GetDlgItem(IDC_CHECK_XORED)->ShowWindow(SW_HIDE);
-			GetDlgItem(IDC_CHECK_SKIPPED)->ShowWindow(SW_HIDE);
 			WindowVerticalShift = 80;
 			WindowHorizontalShift = 60;
 			break;
@@ -254,8 +239,6 @@ BOOL DMD::OnInitDialog()
 			SetWindowText("Dot Matrix Display, Animation Data");
 			GetDlgItem(IDC_BUTTON_PREVIOUS_GRAPHIC)->SetWindowText("<--Previous Frame");
 			GetDlgItem(IDC_BUTTON_NEXT_GRAPHIC)->SetWindowText("Next Frame -->");
-			GetDlgItem(IDC_CHECK_XORED)->ShowWindow(SW_HIDE);
-			GetDlgItem(IDC_CHECK_SKIPPED)->ShowWindow(SW_HIDE);
 			GetDlgItem(IDC_CHECK_XORED)->ShowWindow(SW_HIDE);
 			GetDlgItem(IDC_CHECK_SKIPPED)->ShowWindow(SW_HIDE);
 			WindowVerticalShift = 130;
@@ -276,16 +259,6 @@ BOOL DMD::OnInitDialog()
 		}
 	}
 
-//    m_PreviousGraphicX2.SetWindowText("2<<");
-//    m_NextGraphicX2.SetWindowText(">>2");
-    m_PreviousGraphicX2.SetIcon(::LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON3)));
-    m_NextGraphicX2.SetIcon(::LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON2)));
-
-    m_Wipe.SetIcon(::LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON1)));
-	m_Wipe.EnableWindow(FALSE);
-    bWiped = FALSE;
-
-
 #if ALLOW_MOUSE_TO_REPEAT
 	TimerIDDMD = SetTimer(TIMER_DMD, TIMER_DMD_UPDATE, NULL);
 	NextDebounce =
@@ -293,12 +266,6 @@ BOOL DMD::OnInitDialog()
 	NextDebounceState =
 	PreviousDebounceState = DEBOUNCE_STATE_IDLE;
 #endif
-
-    // init clipboard selector
-    selectedTitleBox = 0;
-
-	memset(PreviousPlaneDataPane0,0,sizeof(PreviousPlaneDataPane0));
-	memset(PreviousPlaneDataPane1,0,sizeof(PreviousPlaneDataPane1));
 
 	UpdateControls();
 
@@ -310,24 +277,16 @@ void DMD::PaintDMDPanelImage(CPaintDC *pDc, DMDPlanes* pPlanes, unsigned char Pa
 {
 	int i,j,k;
 	int RowIndex, ColumnIndex;
-    ThisPixel thisPixel0;
-    ThisPixel thisPixel1;
 	unsigned char ReadMask;
 	unsigned char PLANE_BITS;
 	unsigned char *Plane_0Ptr      = pPlanes->Plane0.Plane_Data;
-	unsigned char *Plane_0XorFlags = pPlanes->Plane0.Plane_XorFlags;
-	unsigned char *Plane_0XorBits  = pPlanes->Plane0.Plane_XorBits;
+	unsigned char *Plane_0Xored    = pPlanes->Plane0.Plane_Xored;
 	unsigned char *Plane_0Skipped  = pPlanes->Plane0.Plane_Skipped;
 	unsigned char *Plane_1Ptr      = pPlanes->Plane1.Plane_Data;
-	unsigned char *Plane_1XorFlags = pPlanes->Plane1.Plane_XorFlags;
-	unsigned char *Plane_1XorBits  = pPlanes->Plane1.Plane_XorBits;
+	unsigned char *Plane_1Xored    = pPlanes->Plane1.Plane_Xored;
 	unsigned char *Plane_1Skipped  = pPlanes->Plane1.Plane_Skipped;
-    unsigned char *Plane_0Previous = PreviousPlaneDataPane0;
-    unsigned char *Plane_1Previous = PreviousPlaneDataPane1;
 	unsigned char XoredCheck = m_Xored.GetCheck();
 	unsigned char SkippedCheck = m_Skipped.GetCheck();
-    BOOL bAnyXoredPixel = FALSE;
-    BOOL bAnySkippedPixel = FALSE;
 
 	const int PixelColorIDs[PIXEL_COLORS][PIXEL_SHADES] = 
 	{
@@ -373,41 +332,6 @@ void DMD::PaintDMDPanelImage(CPaintDC *pDc, DMDPlanes* pPlanes, unsigned char Pa
 		AfxMessageBox("Problem loading pixels.");
 		return;
 	}
-
-    // Init clipboard variables
-    LPTSTR cbData=NULL;
-    LPTSTR cbPtr=NULL;
-    char cbPixel0=0;  // temporarily using as a flag to indicate if we want to use clipboard
-    char cbPixel1;
-    char cbPixel2;
-    switch (selectedTitleBox)
-    {
-       case 1:
-          if (PaneMask & DMD_FULLFRAME_PAINT_MEDIUM)
-          {
-              cbPixel0++; // flag that we want to use clipboard
-          }
-          break;
-       case 2:
-          if (PaneMask & DMD_FULLFRAME_PAINT_DIM)
-          {
-              cbPixel0++; // flag that we want to use clipboard
-          }
-          break;
-       case 3:
-          if (PaneMask & DMD_FULLFRAME_PAINT_BLENDED)
-          {
-              cbPixel0++; // flag that we want to use clipboard
-          }
-          break;
-       default:
-          break;
-    }
-
-    if ((cbPixel0 != 0) && (OpenClipboard()) && (EmptyClipboard()))
-    {
-        cbPtr = cbData = (LPTSTR)LocalAlloc(LPTR,(((DMD_COLUMNS+2)*DMD_ROWS)+1)); // +2 for the newline & linefeed (/r/n) +1 for trailing NULL
-    }
 
 	CBitmap BMOff;
 	CBitmap BMXored;
@@ -488,7 +412,7 @@ void DMD::PaintDMDPanelImage(CPaintDC *pDc, DMDPlanes* pPlanes, unsigned char Pa
 		AfxMessageBox("Problem loading pixel bitmap objects.");
 		return;
 	}
-
+	
 	for (i = 0; i < DMD_ROWS; i++)
 	{
 		for (j = 0; j < (DMD_COLUMNS/8); j++)
@@ -500,50 +424,26 @@ void DMD::PaintDMDPanelImage(CPaintDC *pDc, DMDPlanes* pPlanes, unsigned char Pa
 				{
 					PLANE_BITS |= PLANE0_ON;
 				}
+				if (*Plane_0Xored & ReadMask)
+				{
+					PLANE_BITS |= PLANE0_XORED;
+				}
 				if (*Plane_0Skipped & ReadMask)
 				{
 					PLANE_BITS |= PLANE0_SKIPPED;
-				}
-				if (*Plane_0XorFlags & ReadMask)
-				{
-                    if (*Plane_0XorBits & ReadMask)
-                    {
-					   PLANE_BITS |= PLANE0_XORED; // XOR flag <and> XOR bit then flip bit from previous display
-                    }
-                    else
-                    {
-                       PLANE_BITS |= PLANE0_SKIPPED; // XOR flag <and NOT> XOR bit, then treat it as a skip
-                    }
 				}
 				if (*Plane_1Ptr & ReadMask)
 				{
 					PLANE_BITS |= PLANE1_ON;
 				}
+				if (*Plane_1Xored & ReadMask)
+				{
+					PLANE_BITS |= PLANE1_XORED;
+				}
 				if (*Plane_1Skipped & ReadMask)
 				{
 					PLANE_BITS |= PLANE1_SKIPPED;
 				}
-				if (*Plane_1XorFlags & ReadMask)
-				{
-                    if (*Plane_1XorBits & ReadMask)
-                    {
-					   PLANE_BITS |= PLANE1_XORED; // XOR flag <and> XOR bit then flip bit from previous display
-                    }
-                    else
-                    {
-                       PLANE_BITS |= PLANE1_SKIPPED; // XOR flag <and NOT> XOR bit, then treat it as a skip
-                    }
-				}
-
-                // Quick check if we have any xor or skipped pixels
-                if ((PLANE_BITS & (PLANE0_SKIPPED | PLANE1_SKIPPED)) && !SkippedCheck)
-                {
-                    bAnySkippedPixel = TRUE;
-                }
-                if ((PLANE_BITS & (PLANE0_XORED | PLANE1_XORED)) && !XoredCheck)
-                {
-                    bAnyXoredPixel = TRUE;
-                }
 
 				//
 				ColumnIndex = ((((j * 8) + k)) * PIXEL_WIDTH);
@@ -554,54 +454,36 @@ void DMD::PaintDMDPanelImage(CPaintDC *pDc, DMDPlanes* pPlanes, unsigned char Pa
 				//
 				if (PaneMask & DMD_FULLFRAME_PAINT_DIM)
 				{
-                    thisPixel0 = ThisPixel_Off;
 					if (PLANE_BITS & PLANE0_ON)
 					{
-                       thisPixel0 = ThisPixel_On;
-					}
-					else if (PLANE_BITS & PLANE0_SKIPPED)
-					{
-						if (SkippedCheck)
-						{
-                           thisPixel0 = ThisPixel_Skipped;
-						}
-						else if (*Plane_0Previous & ReadMask)
-                        {
-                           thisPixel0 = ThisPixel_On;
-						}
+						pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hMedium,0,0,SRCCOPY);
 					}
 					else if (PLANE_BITS & PLANE0_XORED)
 					{
 						if (XoredCheck)
 						{
-                           thisPixel0 = ThisPixel_Xored;
+							pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hXored,0,0,SRCCOPY);
 						}
-						else if (!(*Plane_0Previous & ReadMask))
-                        {
-                           thisPixel0 = ThisPixel_On;
+						else
+						{
+							pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hMedium,0,0,SRCCOPY);
 						}
 					}
-                    switch (thisPixel0)
-                    {
-                       case ThisPixel_Off:
-                          pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hOff,0,0,SRCCOPY);
-                          cbPixel0 = '0'; // pixel off
-                          break;
-                       case ThisPixel_On:
-                          pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hMedium,0,0,SRCCOPY);
-                          cbPixel0 = '2'; // medium pixel on
-                          break;
-                       case ThisPixel_Xored:
-                          pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hXored,0,0,SRCCOPY);
-                          cbPixel0 = 'x'; // xored pixel, user has XOR checkbox checked
-                          break;
-                       case ThisPixel_Skipped:
-                          pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hSkipped,0,0,SRCCOPY);
-                          cbPixel0 = '_'; // skipped pixel, user has SKIPPED checkbox checked
-                          break;
-                       default:
-                          break;
-                    }
+					else if (PLANE_BITS & PLANE0_SKIPPED)
+					{
+						if (SkippedCheck)
+						{
+							pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hSkipped,0,0,SRCCOPY);
+						}
+						else
+						{
+							pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hOff,0,0,SRCCOPY);
+						}
+					}
+					else
+					{
+						pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hOff,0,0,SRCCOPY);
+					}
 				}
 				
 				RowIndex += ((DMD_ROWS + 1) * PIXEL_HEIGHT);
@@ -611,74 +493,37 @@ void DMD::PaintDMDPanelImage(CPaintDC *pDc, DMDPlanes* pPlanes, unsigned char Pa
 				//
 				if (PaneMask & DMD_FULLFRAME_PAINT_MEDIUM)
 				{
-                    thisPixel1 = ThisPixel_Off;
 					if (PLANE_BITS & PLANE1_ON)
 					{
-                       thisPixel1 = ThisPixel_On;
-					}
-					else if (PLANE_BITS & PLANE1_SKIPPED)
-					{
-						if (SkippedCheck)
-						{
-                           thisPixel1 = ThisPixel_Skipped;
-						}
-						else if (*Plane_1Previous & ReadMask)
-						{
-                           thisPixel1 = ThisPixel_On;
-						}
+						pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hDim,0,0,SRCCOPY);
 					}
 					else if (PLANE_BITS & PLANE1_XORED)
 					{
 						if (XoredCheck)
 						{
-                           thisPixel1 = ThisPixel_Xored;
+							pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hXored,0,0,SRCCOPY);
 						}
-						else if (!(*Plane_1Previous & ReadMask))
+						else
 						{
-                           thisPixel1 = ThisPixel_On;
+							pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hDim,0,0,SRCCOPY);
 						}
 					}
-                    switch (thisPixel1)
-                    {
-                       case ThisPixel_Off:
-                          pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hOff,0,0,SRCCOPY);
-                          cbPixel1 = '0'; // pixel off
-                          break;
-                       case ThisPixel_On:
-                          pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hDim,0,0,SRCCOPY);
-                          cbPixel1 = '1'; // dim pixel on
-                          break;
-                       case ThisPixel_Xored:
-                          pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hXored,0,0,SRCCOPY);
-                          cbPixel1 = 'x'; // xored pixel, user has XOR checkbox checked
-                          break;
-                       case ThisPixel_Skipped:
-                          pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hSkipped,0,0,SRCCOPY);
-                          cbPixel1 = '_'; // skipped pixel, user has SKIPPED checkbox checked
-                          break;
-                       default:
-                          break;
-                    }
+					else if (PLANE_BITS & PLANE1_SKIPPED)
+					{
+						if (SkippedCheck)
+						{
+							pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hSkipped,0,0,SRCCOPY);
+						}
+						else
+						{
+							pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hOff,0,0,SRCCOPY);
+						}
+					}
+					else
+					{
+						pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hOff,0,0,SRCCOPY);
+					}
 				}
-
-                // Save "previous" frame data
-                if (thisPixel0 == ThisPixel_Off)
-                {
-                   *Plane_0Previous &= ~ReadMask;
-                }
-                else if (thisPixel0 == ThisPixel_On)
-                {
-                   *Plane_0Previous |= ReadMask;
-                }
-
-                if (thisPixel1 == ThisPixel_Off)
-                {
-                   *Plane_1Previous &= ~ReadMask;
-                }
-                else if (thisPixel1 == ThisPixel_On)
-                {
-                   *Plane_1Previous |= ReadMask;
-                }
 
 				RowIndex += ((DMD_ROWS + 1) * PIXEL_HEIGHT);
 
@@ -687,87 +532,34 @@ void DMD::PaintDMDPanelImage(CPaintDC *pDc, DMDPlanes* pPlanes, unsigned char Pa
 				//
 				if (PaneMask & DMD_FULLFRAME_PAINT_BLENDED)
 				{
-                   if ((thisPixel0 == ThisPixel_On) && (thisPixel1 == ThisPixel_On))
-                   {
-                      pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hBright,0,0,SRCCOPY);
-                      cbPixel2 = '3'; // pixel bright
-                   }
-                   else if (thisPixel0 == ThisPixel_On)
-                   {
-                      pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hMedium,0,0,SRCCOPY);
-                      cbPixel2 = '2'; // pixel medium
-                   }
-                   else if (thisPixel1 == ThisPixel_On)
-                   {
-                      pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hDim,0,0,SRCCOPY);
-                      cbPixel2 = '1'; // pixel dim
-                   }
-                   else
-                   {
-                      pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hOff,0,0,SRCCOPY);
-                      cbPixel2 = '0'; // pixel off
-                   }
+					if ((PLANE_BITS & (PLANE0_ON | PLANE1_ON)) == (PLANE0_ON | PLANE1_ON))
+					{
+						pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hBright,0,0,SRCCOPY);
+					}
+					else if (PLANE_BITS & PLANE0_ON)
+					{
+						pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hMedium,0,0,SRCCOPY);
+					}
+					else if (PLANE_BITS & PLANE1_ON)
+					{
+						pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hDim,0,0,SRCCOPY);
+					}
+					else
+					{
+						pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hOff,0,0,SRCCOPY);
+					}
 				}
-
-                // if clipboard operation is in use, push the cbPixel to clipboard ram
-                if (cbPtr != NULL)
-                {
-                   switch (selectedTitleBox)
-                   {
-                      case 1:
-                          *cbPtr++ = cbPixel0;
-                          break;
-                      case 2:
-                          *cbPtr++ = cbPixel1;
-                          break;
-                      case 3:
-                          *cbPtr++ = cbPixel2;
-                          break;
-                      default:
-                          break;
-                    }
-                }
 			}
 			Plane_0Ptr++;
 			Plane_1Ptr++;
-			Plane_0Skipped++;
-			Plane_1Skipped++;
-			Plane_0XorFlags++;
-			Plane_1XorFlags++;
-			Plane_0XorBits++;
-			Plane_1XorBits++;
-            Plane_0Previous++;
-            Plane_1Previous++;
 		}
-        // Add newline for clipboard operation
-        if (cbPtr != NULL)
-        {
-           *cbPtr++ = '\r';
-           *cbPtr++ = '\n';
-        }
 	}
-    // Add trailing null for clipboard operations
-    if (cbPtr != NULL)
-    {
-       *cbPtr++ = NULL;
-    }
-
 	hOff.SelectObject(old_hOff);
 	hXored.SelectObject(old_hXored);
 	hSkipped.SelectObject(old_hSkipped);
 	hDim.SelectObject(old_hDim);
 	hMedium.SelectObject(old_hMedium);
 	hBright.SelectObject(old_hBright);
-
-    // Finish up clipboard operation
-    if ((cbData != NULL) && (::SetClipboardData( CF_TEXT, cbData ) != NULL ))
-    {
-        // ...  
-        CloseClipboard();
-    }
-
-    // We know the "Previous" data has been filled in, so make sure the Wipe button is enabled
-	m_Wipe.EnableWindow((((bAnySkippedPixel == TRUE) || (bAnyXoredPixel == TRUE)) && (bWiped != TRUE)) ? TRUE : FALSE);
 }
 
 void DMD::OnPaint() 
@@ -1579,8 +1371,7 @@ int DMD::InitCommon()
 	CommonData.ROMSize = Length;
 	CommonData.TotalPages = (unsigned char)((Length + (PAGE_LENGTH - 1)) / PAGE_LENGTH);
 	CommonData.StartPtr = DocPtr->m_szDataBuffer.GetBuffer(Length);
-    CommonData.EndPtr = (unsigned char *)&CommonData.StartPtr[(CommonData.ROMSize-1)];
-
+	
 	if (CommonData.StartPtr == NULL)
 	{
 		AfxMessageBox("Unexpected NULL pointer for ROM data");
@@ -2819,245 +2610,12 @@ int DMD::Init()
 
 	return 0;
 }
-void DMD::exportCurrent() {
 
-	DMDPlanes* pPlanes = &FullFrameImageData.Planes;
-	unsigned char *Plane_0Ptr      = pPlanes->Plane0.Plane_Data;
-	unsigned char *Plane_0XorFlags = pPlanes->Plane0.Plane_XorFlags;
-	unsigned char *Plane_0XorBits  = pPlanes->Plane0.Plane_XorBits;
-	unsigned char *Plane_0Skipped  = pPlanes->Plane0.Plane_Skipped;
-	unsigned char *Plane_1Ptr      = pPlanes->Plane1.Plane_Data;
-	unsigned char *Plane_1XorFlags = pPlanes->Plane1.Plane_XorFlags;
-	unsigned char *Plane_1XorBits  = pPlanes->Plane1.Plane_XorBits;
-	unsigned char *Plane_1Skipped  = pPlanes->Plane1.Plane_Skipped;
-    unsigned char *Plane_0Previous = PreviousPlaneDataPane0;
-    unsigned char *Plane_1Previous = PreviousPlaneDataPane1;
-	int i,j,k;
-	int RowIndex, ColumnIndex;
-    ThisPixel thisPixel0;
-    ThisPixel thisPixel1;
-	unsigned char ReadMask;
-	unsigned char PLANE_BITS;
-
-	if( FullFrameImageData.Planes.Plane0.Plane_Status ==  PLANE_STATUS_VALID ) {
-		// create a RGBA char array from both planes and encode it with LodePNG
-		// then save to disk
-		int w = 128; int h = 32;
-		unsigned char* image = (unsigned char*)malloc( w * h * 4 );
-		memset(image, 0, w*h*4);
-		unsigned char* p = image;
-		unsigned char* pSrc = FullFrameImageData.Planes.Plane0.Plane_Data;
-		unsigned char* pSrc1 = FullFrameImageData.Planes.Plane1.Plane_Data;
-
-	for (i = 0; i < DMD_ROWS; i++)
-	{
-		for (j = 0; j < (DMD_COLUMNS/8); j++)
-		{
-			for (ReadMask = 0x01, k = 0; k < 8; k++,ReadMask <<= 1)
-			{
-				PLANE_BITS = 0x00;
-				if (*Plane_0Ptr & ReadMask)
-				{
-					PLANE_BITS |= PLANE0_ON;
-				}
-				if (*Plane_0Skipped & ReadMask)
-				{
-					PLANE_BITS |= PLANE0_SKIPPED;
-				}
-				if (*Plane_0XorFlags & ReadMask)
-				{
-                    if (*Plane_0XorBits & ReadMask)
-                    {
-					   PLANE_BITS |= PLANE0_XORED; // XOR flag <and> XOR bit then flip bit from previous display
-                    }
-                    else
-                    {
-                       PLANE_BITS |= PLANE0_SKIPPED; // XOR flag <and NOT> XOR bit, then treat it as a skip
-                    }
-				}
-				if (*Plane_1Ptr & ReadMask)
-				{
-					PLANE_BITS |= PLANE1_ON;
-				}
-				if (*Plane_1Skipped & ReadMask)
-				{
-					PLANE_BITS |= PLANE1_SKIPPED;
-				}
-				if (*Plane_1XorFlags & ReadMask)
-				{
-                    if (*Plane_1XorBits & ReadMask)
-                    {
-					   PLANE_BITS |= PLANE1_XORED; // XOR flag <and> XOR bit then flip bit from previous display
-                    }
-                    else
-                    {
-                       PLANE_BITS |= PLANE1_SKIPPED; // XOR flag <and NOT> XOR bit, then treat it as a skip
-                    }
-				}
-
-				//
-				ColumnIndex = ((((j * 8) + k)) * PIXEL_WIDTH);
-				RowIndex = (i * PIXEL_HEIGHT);
-
-				//
-				// Determine what color to show for medium colored plane
-				//
-				if (true)
-				{
-                    thisPixel0 = ThisPixel_Off;
-					if (PLANE_BITS & PLANE0_ON)
-					{
-                       thisPixel0 = ThisPixel_On;
-					}
-					else if (PLANE_BITS & PLANE0_SKIPPED)
-					{
-						if (false)
-						{
-                           thisPixel0 = ThisPixel_Skipped;
-						}
-						else if (*Plane_0Previous & ReadMask)
-                        {
-                           thisPixel0 = ThisPixel_On;
-						}
-					}
-					else if (PLANE_BITS & PLANE0_XORED)
-					{
-						if (false)
-						{
-                           thisPixel0 = ThisPixel_Xored;
-						}
-						else if (!(*Plane_0Previous & ReadMask))
-                        {
-                           thisPixel0 = ThisPixel_On;
-						}
-					}
-				}
-				
-				RowIndex += ((DMD_ROWS + 1) * PIXEL_HEIGHT);
-
-				//
-				// Determine what color to show for dim plane
-				//
-				if (true)
-				{
-                    thisPixel1 = ThisPixel_Off;
-					if (PLANE_BITS & PLANE1_ON)
-					{
-                       thisPixel1 = ThisPixel_On;
-					}
-					else if (PLANE_BITS & PLANE1_SKIPPED)
-					{
-						if (false)
-						{
-                           thisPixel1 = ThisPixel_Skipped;
-						}
-						else if (*Plane_1Previous & ReadMask)
-						{
-                           thisPixel1 = ThisPixel_On;
-						}
-					}
-					else if (PLANE_BITS & PLANE1_XORED)
-					{
-						if (false)
-						{
-                           thisPixel1 = ThisPixel_Xored;
-						}
-						else if (!(*Plane_1Previous & ReadMask))
-						{
-                           thisPixel1 = ThisPixel_On;
-						}
-					}
-                    
-				}
-
-                // Save "previous" frame data
-                if (thisPixel0 == ThisPixel_Off)
-                {
-                   *Plane_0Previous &= ~ReadMask;
-                }
-                else if (thisPixel0 == ThisPixel_On)
-                {
-                   *Plane_0Previous |= ReadMask;
-                }
-
-                if (thisPixel1 == ThisPixel_Off)
-                {
-                   *Plane_1Previous &= ~ReadMask;
-                }
-                else if (thisPixel1 == ThisPixel_On)
-                {
-                   *Plane_1Previous |= ReadMask;
-                }
-
-				RowIndex += ((DMD_ROWS + 1) * PIXEL_HEIGHT);
-
-				//
-				// Determine what color to show for blended plane
-				//
-				if (true)
-				{
-                   if ((thisPixel0 == ThisPixel_On) && (thisPixel1 == ThisPixel_On))
-                   {
-                      //pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hBright,0,0,SRCCOPY);
-                      //cbPixel2 = '3'; // pixel bright
-					   *(p+3) = 255; // solid
-					   *p = 255;
-                   }
-                   else if (thisPixel0 == ThisPixel_On)
-                   {
-                      //pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hMedium,0,0,SRCCOPY);
-                      //cbPixel2 = '2'; // pixel medium
-					   *(p+3) = 255; // solid
-					   *p = 170;
-
-                   }
-                   else if (thisPixel1 == ThisPixel_On)
-                   {
-                      //pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hDim,0,0,SRCCOPY);
-					   *(p+3) = 255; // solid
-					   *p = 85;
-                      //cbPixel2 = '1'; // pixel dim
-                   }
-                   else
-                   {
-                      //pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hOff,0,0,SRCCOPY);
-                      //cbPixel2 = '0'; // pixel off
-                   }
-				}
-				p += 4;
-			} // for mask
-			Plane_0Ptr++;
-			Plane_1Ptr++;
-			Plane_0Skipped++;
-			Plane_1Skipped++;
-			Plane_0XorFlags++;
-			Plane_1XorFlags++;
-			Plane_0XorBits++;
-			Plane_1XorBits++;
-            Plane_0Previous++;
-            Plane_1Previous++;
-			
-		}
-       
-	}
-
-
-		char filename[100];
-		sprintf(filename, "export-%04d.png", FullFrameImageData.CurrentImageIndex );
-		lodepng_encode32_file(filename, image, w, h);
-		free((void*)image);
-
-	}
-
-}
 
 void DMD::DecodeFullFrameGraphic(unsigned long GraphicIndex)
 {
 	DecodeImageToPlane(GraphicIndex, &FullFrameImageData.Planes.Plane0);
 	DecodeImageToPlane((GraphicIndex + 1), &FullFrameImageData.Planes.Plane1);
-	if( m_Export.GetCheck() ) {
-		exportCurrent();
-	}
 }
 
 void DMD::DecodeVariableSizedImageData()
@@ -3076,9 +2634,6 @@ void DMD::DecodeVariableSizedImageData()
 
 void DMD::DecodeCurrentIndex(void)
 {
-    // bWiped no longer needs to take precedence, if we're here it means somebody pressed Next/Previous
-    bWiped = FALSE;
-
 	switch (dialogType)
 	{
 		case DMD_DIALOG_TYPE_GRAPHICS:
@@ -3182,12 +2737,12 @@ int DMD::IncrementVariableSizedImageIndex(int *pTableIndex, int *pImageIndex)
 	return 0;
 }
 
-void DMD::DecodePreviousIndex(int count)
+void DMD::DecodePreviousIndex(void)
 {
-    switch (dialogType)
+	switch (dialogType)
 	{
 		case DMD_DIALOG_TYPE_GRAPHICS:
-            while ((count--) && (FullFrameImageData.CurrentImageIndex))
+			if (FullFrameImageData.CurrentImageIndex)
 			{
 				FullFrameImageData.CurrentImageIndex--;
 			}
@@ -3200,7 +2755,7 @@ void DMD::DecodePreviousIndex(int count)
 			{
 				if (VariableSizedImageData.CurrentImageYShift > 0)
 				{
-					VariableSizedImageData.CurrentImageYShift -= (IMAGE_SHIFT_Y_PIXEL_COUNT * count);
+					VariableSizedImageData.CurrentImageYShift -= IMAGE_SHIFT_Y_PIXEL_COUNT;
 					if (VariableSizedImageData.CurrentImageYShift < 0)
 					{
 						VariableSizedImageData.CurrentImageYShift = 0;
@@ -3209,7 +2764,7 @@ void DMD::DecodePreviousIndex(int count)
 				}
 				if (VariableSizedImageData.CurrentImageXShift > 0)
 				{
-					VariableSizedImageData.CurrentImageXShift -= (IMAGE_SHIFT_X_PIXEL_COUNT * count);
+					VariableSizedImageData.CurrentImageXShift -= IMAGE_SHIFT_X_PIXEL_COUNT;
 					if (VariableSizedImageData.CurrentImageXShift < 0)
 					{
 						VariableSizedImageData.CurrentImageXShift = 0;
@@ -3220,14 +2775,11 @@ void DMD::DecodePreviousIndex(int count)
 			VariableSizedImageData.CurrentImageXShift = -1;
 			VariableSizedImageData.CurrentImageYShift = -1;
 			//
-            while (count--)
-            {
-			   if (DecrementVariableSizedImageIndex(&VariableSizedImageData.CurrentTableIndex, &VariableSizedImageData.CurrentImageIndex) != 0)
-			   {
-			      //TmpStr.Format("Unexpected error decrementing image indexes");
-				  //AfxMessageBox(TmpStr);
-			   }
-            }
+			if (DecrementVariableSizedImageIndex(&VariableSizedImageData.CurrentTableIndex, &VariableSizedImageData.CurrentImageIndex) != 0)
+			{
+				//TmpStr.Format("Unexpected error decrementing image indexes");
+				//AfxMessageBox(TmpStr);
+			}
 			break;
 
 		default:
@@ -3239,18 +2791,15 @@ void DMD::DecodePreviousIndex(int count)
 	InvalidateDMDPages();
 }
 
-void DMD::DecodeNextIndex(int count)
+void DMD::DecodeNextIndex(void)
 {
 	switch (dialogType)
 	{
 		case DMD_DIALOG_TYPE_GRAPHICS:
-            while (count--)
-            {
-			   //if (FullFrameImageData.CurrentImageIndex < MAX_GRAPHIC_INDEX)
-			   {
-				   FullFrameImageData.CurrentImageIndex++;
-			   }
-            }
+			//if (FullFrameImageData.CurrentImageIndex < MAX_GRAPHIC_INDEX)
+			{
+				FullFrameImageData.CurrentImageIndex++;
+			}
 			break;
 
 		case DMD_DIALOG_TYPE_FONTDATA:
@@ -3260,25 +2809,22 @@ void DMD::DecodeNextIndex(int count)
 			{
 				if ((VariableSizedImageData.CurrentImageXShift + DMD_COLUMNS) < VariableSizedImageData.CurrentImageXSize)
 				{
-					VariableSizedImageData.CurrentImageXShift += (IMAGE_SHIFT_X_PIXEL_COUNT * count);
+					VariableSizedImageData.CurrentImageXShift += IMAGE_SHIFT_X_PIXEL_COUNT;
 					break;
 				}
 				if ((VariableSizedImageData.CurrentImageYShift + DMD_ROWS) < VariableSizedImageData.CurrentImageYSize)
 				{
-					VariableSizedImageData.CurrentImageYShift += (IMAGE_SHIFT_Y_PIXEL_COUNT * count);
+					VariableSizedImageData.CurrentImageYShift += IMAGE_SHIFT_Y_PIXEL_COUNT;
 					break;
 				}
 			}
 			VariableSizedImageData.CurrentImageXShift = 0;
 			VariableSizedImageData.CurrentImageYShift = 0;
 			//
-            while (count--)
-            {
-			   if (IncrementVariableSizedImageIndex(&VariableSizedImageData.CurrentTableIndex, &VariableSizedImageData.CurrentImageIndex) != 0)
-			   {
-				   //TmpStr.Format("Unexpected error advancing image indexes");
-				   //AfxMessageBox(TmpStr);
-			   }
+			if (IncrementVariableSizedImageIndex(&VariableSizedImageData.CurrentTableIndex, &VariableSizedImageData.CurrentImageIndex) != 0)
+			{
+				//TmpStr.Format("Unexpected error advancing image indexes");
+				//AfxMessageBox(TmpStr);
 			}
 			break;
 
@@ -3370,11 +2916,6 @@ unsigned char DMD::DecodeVariableSizedImage_Centered(unsigned char **SourcePtr, 
 	unsigned int WriteCounter = 0;
 	int i,j;
 
-    if ((*SourcePtr) >= CommonData.EndPtr)
-    {
-       return PLANE_STATUS_IMAGEOUTOFRANGE;
-    }
-
 	//
 	if (VariableSizedImageData.CurrentImageYShift == -1)
 	{
@@ -3401,10 +2942,6 @@ unsigned char DMD::DecodeVariableSizedImage_Centered(unsigned char **SourcePtr, 
 		for (j = 0; j < ((ImageWidth + 7) / 8); j++)
 		{
 			(*SourcePtr)++;
-            if ((*SourcePtr) >= CommonData.EndPtr)
-            {
-               return PLANE_STATUS_IMAGEOUTOFRANGE;
-            }
 		}
 	}
 
@@ -3452,10 +2989,6 @@ unsigned char DMD::DecodeVariableSizedImage_Centered(unsigned char **SourcePtr, 
 		{
 			ch = **SourcePtr;
 			(*SourcePtr)++;
-            if ((*SourcePtr) >= CommonData.EndPtr)
-            {
-               return PLANE_STATUS_IMAGEOUTOFRANGE;
-            }
 			if ((j >= ((VariableSizedImageData.CurrentImageXShift+7)/8)) && (j < (((DMD_COLUMNS+VariableSizedImageData.CurrentImageXShift)+7)/8)))
 			{
 				WriteNext8BitValue(DestPtr, &WriteCounter, ch, WRITE_TYPE_ROWS);
@@ -3480,10 +3013,6 @@ unsigned char DMD::DecodeVariableSizedImage_Centered(unsigned char **SourcePtr, 
 		for (j = 0; j < ((ImageWidth + 7) / 8); j++)
 		{
 			(*SourcePtr)++;
-            if ((*SourcePtr) >= CommonData.EndPtr)
-            {
-               return PLANE_STATUS_IMAGEOUTOFRANGE;
-            }
 		}
 	}
 
@@ -3511,10 +3040,6 @@ void DMD::DecodeVariableSizedImageIndex_NoHeader(unsigned char **SourcePtr, DMDP
 	//
 	ImageWidth = **SourcePtr;
 	(*SourcePtr)++;
-    if ((*SourcePtr) >= CommonData.EndPtr)
-    {
-       return;
-    }
 
 	//
 	//TmpStr.Format("DecodeVariableSizedImageIndex_NoHeader(), TableHeight 0x%02x, ImageWidth x%02x",TableHeight,ImageWidth);
@@ -3544,34 +3069,14 @@ void DMD::DecodeVariableSizedImageIndex_Header(unsigned char **SourcePtr, DMDPla
 	//
 	HeaderByte = **SourcePtr;
 	(*SourcePtr)++;
-    if ((*SourcePtr) >= CommonData.EndPtr)
-    {
-       return;
-    }
 	VerticalOffset = **SourcePtr;
 	(*SourcePtr)++;
-    if ((*SourcePtr) >= CommonData.EndPtr)
-    {
-       return;
-    }
 	HorizontalOffset = **SourcePtr;
 	(*SourcePtr)++;
-    if ((*SourcePtr) >= CommonData.EndPtr)
-    {
-       return;
-    }
 	ImageHeight = **SourcePtr;
 	(*SourcePtr)++;
-    if ((*SourcePtr) >= CommonData.EndPtr)
-    {
-       return;
-    }
 	ImageWidth = **SourcePtr;
 	(*SourcePtr)++;
-    if ((*SourcePtr) >= CommonData.EndPtr)
-    {
-       return;
-    }
 
 	//TmpStr.Format("DecodeVariableSizedImageIndex_Header(), HeaderByte 0x%02x, TableHeight 0x%02x, VertOffset 0x%02x, HorizOffset 0x%02x, ImageHeight 0x%02x, ImageWidth 0x%02x",
 	//	           HeaderByte, TableHeight, VerticalOffset, HorizontalOffset, ImageHeight, ImageWidth);
@@ -3601,16 +3106,8 @@ void DMD::DecodeVariableSizedImageIndex_Header(unsigned char **SourcePtr, DMDPla
 
 				TmpBuf[0] = (**SourcePtr)&0xFF;
 				(*SourcePtr)++;
-                if ((*SourcePtr) >= CommonData.EndPtr)
-                {
-                   return;
-                }
 				TmpBuf[1] = (**SourcePtr)&0xFF;
 				(*SourcePtr)++;
-                if ((*SourcePtr) >= CommonData.EndPtr)
-                {
-                   return;
-                }
 				TmpBuf[2] = (Page&0xFF);
 
 				if (GetROMAddressFromAddrOf3ByteWPCAddrPage(TmpBuf, &Addr) != 0)
@@ -3664,12 +3161,6 @@ void DMD::DecodeImageToPlane(int Index, DMDPlane *pPlane)
 		return;
 	}
 
-	if (Addr >= CommonData.ROMSize)
-    {
-        pPlane->Plane_Status = PLANE_STATUS_TABLEENTRYOUTOFRANGE;
-        return;
-    }
-
 	OriginalDataPtr = DataPtr = (unsigned char *)&CommonData.StartPtr[Addr];
 	pPlane->Plane_Status = DecodeFullFrameGraphicImage(&DataPtr, pPlane);
 	pPlane->Plane_Size = (DataPtr - OriginalDataPtr);
@@ -3679,21 +3170,12 @@ unsigned char DMD::DecodeFullFrameGraphicImage(unsigned char **Source, DMDPlane 
 {
 	unsigned char *Dest = pPlane->Plane_Data;
 	unsigned char *Skipped = pPlane->Plane_Skipped;
-	unsigned char *XorFlags = pPlane->Plane_XorFlags;
-	unsigned char *XorBits = pPlane->Plane_XorBits;
+	unsigned char *Xored = pPlane->Plane_Xored;
 
 	unsigned char ch = **Source;
 	(*Source)++;
-    if ((*Source) >= CommonData.EndPtr)
-    {
-        return PLANE_STATUS_IMAGEOUTOFRANGE;
-    }
 
-	//
-	TmpStr.Format("Type 0x%02x",ch);
-	DebugShiftKeyMsgStrPrint(TmpStr);
-
-	switch (ch&0x0F)
+	switch (ch)
 	{
 		case 0x00	:  //  Raw 32 bytes by 16 byes copy, no encodings.
 			Decode_00(Source, Dest);
@@ -3714,10 +3196,10 @@ unsigned char DMD::DecodeFullFrameGraphicImage(unsigned char **Source, DMDPlane 
 			Decode_05(Source, Dest);
 			break;
 		case 0x06   :  //  XOR-Repeat, Columns
-			Decode_06(Source, Dest, XorFlags, XorBits);
+			Decode_06(Source, Dest, Xored);
 			break;
 		case 0x07   :  //  XOR-Repeat, Rows
-			Decode_07(Source, Dest, XorFlags, XorBits);
+			Decode_07(Source, Dest, Xored);
 			break;
 		case 0x08   :  //  Bulk Skips and Bulk Repeats, Columns
 			Decode_08(Source, Dest, Skipped);
@@ -3736,12 +3218,6 @@ unsigned char DMD::DecodeFullFrameGraphicImage(unsigned char **Source, DMDPlane 
 			DebugShiftKeyMsgStrPrint(TmpStr);
 			return PLANE_STATUS_UNKNOWN_TYPE;
 	}
-
-    if ((*Source) >= CommonData.EndPtr)
-    {
-        return PLANE_STATUS_IMAGEOUTOFRANGE;
-    }
-
 	return PLANE_STATUS_VALID;
 }
 
@@ -3753,10 +3229,6 @@ void DMD::Decode_00(unsigned char **Source, unsigned char *Dest)
 	{
 		*Dest++ = **Source;
 		(*Source)++;
-        if ((*Source) >= CommonData.EndPtr)
-        {
-           return;
-        }
 	}
 }
 
@@ -3830,33 +3302,17 @@ void DMD::Decode_01or02(unsigned char **SourcePtr, unsigned char **DestPtr, unsi
 
 	SpecialFlagByte = **SourcePtr;
 	(*SourcePtr)++;
-    if ((*SourcePtr) >= CommonData.EndPtr)
-    {
-       return;
-    }
 	WriteCounter = 0;         // Stores bytes we've written to DMD Ram
 	do
 	{
 		ch = **SourcePtr;
 		(*SourcePtr)++;
-        if ((*SourcePtr) >= CommonData.EndPtr)
-        {
-           return;
-        }
 		if (ch == SpecialFlagByte)
 		{
 			unsigned char Value1 = **SourcePtr;
 			(*SourcePtr)++;
-            if ((*SourcePtr) >= CommonData.EndPtr)
-            {
-               return;
-            }
 			unsigned int Value2 = **SourcePtr;
 			(*SourcePtr)++;
-            if ((*SourcePtr) >= CommonData.EndPtr)
-            {
-               return;
-            }
 			do
 			{
 				WriteNext8BitValue(DestPtr,&WriteCounter, Value2, Type);
@@ -3999,39 +3455,19 @@ void DMD::Decode_04or05(unsigned char **SourcePtr, unsigned char **DestPtr, unsi
 
 	Header.SpecialFlagByte = **SourcePtr;
 	(*SourcePtr)++;
-    if ((*SourcePtr) >= CommonData.EndPtr)
-    {
-       return;
-    }
 	for (i = 0; i < 8; i++)
 	{
 		Header.RepeatBytes[i] = **SourcePtr;
 		(*SourcePtr)++;
-        if ((*SourcePtr) >= CommonData.EndPtr)
-        {
-           return;
-        }
 	}
 
 	do
 	{
 		ch = ReadNext8BitValue(&Header,SourcePtr);
-        if ((*SourcePtr) >= CommonData.EndPtr)
-        {
-           return;
-        }
 		if (ch == Header.SpecialFlagByte)
 		{
 			unsigned char Value1 = ReadNext8BitValue(&Header,SourcePtr);
-            if ((*SourcePtr) >= CommonData.EndPtr)
-            {
-               return;
-            }
 			unsigned int Value2 = (unsigned int)ReadNext8BitValue(&Header,SourcePtr);
-            if ((*SourcePtr) >= CommonData.EndPtr)
-            {
-               return;
-            }
 			do
 			{
 				WriteNext8BitValue(DestPtr,&WriteCounter, Value2, Type);
@@ -4084,10 +3520,6 @@ void DMD::WriteNext8BitValue(unsigned char **DestPtr, unsigned int *WriteCounter
 unsigned char DMD::ReadNext8BitValue(struct ImageHeader *Header, unsigned char **SourcePtr)
 {
 	unsigned char ch = ReadNextBit(Header, SourcePtr);
-    if ((*SourcePtr) >= CommonData.EndPtr)
-    {
-       return 0x00;
-    }
 	unsigned char WriteMask;
 	unsigned char ReturnValue;
 	int i;
@@ -4105,10 +3537,6 @@ unsigned char DMD::ReadNext8BitValue(struct ImageHeader *Header, unsigned char *
 			{
 				i = 7;
 			}
-            if ((*SourcePtr) >= CommonData.EndPtr)
-            {
-                return 0x00;
-            }
 		}
 		ReturnValue = Header->RepeatBytes[OnesCount];
 	}
@@ -4125,10 +3553,6 @@ unsigned char DMD::ReadNext8BitValue(struct ImageHeader *Header, unsigned char *
 			{
 				ReturnValue |= WriteMask;
 			}
-            if ((*SourcePtr) >= CommonData.EndPtr)
-            {
-                return 0x00;
-            }
 			WriteMask >>= 1;
 		}
 	}
@@ -4142,16 +3566,12 @@ unsigned char DMD::ReadNextBit(struct ImageHeader *Header, unsigned char **Sourc
 	{
 		Header->ReadMask = 0x80;
 		(*SourcePtr)++;
-        if ((*SourcePtr) >= CommonData.EndPtr)
-        {
-            return 0x00;
-        }
 	}
 	return ch;
 }
 
 
-void DMD::Decode_06(unsigned char **Source, unsigned char *Dest, unsigned char *XorFlags, unsigned char *XorBits)
+void DMD::Decode_06(unsigned char **Source, unsigned char *Dest, unsigned char *Xored)
 {
 // IMAGE TYPE 0x09 or 0x06                ; ECE6h
 //
@@ -4166,10 +3586,10 @@ void DMD::Decode_06(unsigned char **Source, unsigned char *Dest, unsigned char *
 // drawn to DMD ram in COLUMNS from LEFT to RIGHT starting at the top left of
 // the DMD and ending at the bottom right.
 //
-	Decode_06or07(Source, &Dest, &XorFlags, &XorBits, WRITE_TYPE_COLUMNS);
+	Decode_06or07(Source, &Dest, &Xored, WRITE_TYPE_COLUMNS);
 }
 
-void DMD::Decode_07(unsigned char **Source, unsigned char *Dest, unsigned char *XorFlags, unsigned char *XorBits)
+void DMD::Decode_07(unsigned char **Source, unsigned char *Dest, unsigned char *Xored)
 {
 // IMAGE TYPE 0x0A or 0x07                ; ED80h
 //
@@ -4201,58 +3621,39 @@ void DMD::Decode_07(unsigned char **Source, unsigned char *Dest, unsigned char *
 // the existing data in the RAM is XORed with the <XOR Value> for the number of
 // bytes in <Repeat Count>.
 //
-	Decode_06or07(Source, &Dest, &XorFlags, &XorBits, WRITE_TYPE_ROWS);
+	Decode_06or07(Source, &Dest, &Xored, WRITE_TYPE_ROWS);
 }
 
-void DMD::Decode_06or07(unsigned char **SourcePtr, unsigned char **DestPtr, unsigned char **XorFlagsPtr, unsigned char **XorBitsPtr, unsigned char Type)
+void DMD::Decode_06or07(unsigned char **SourcePtr, unsigned char **DestPtr, unsigned char **XoredPtr, unsigned char Type)
 {
 	unsigned char ch;
 	unsigned char SpecialFlagByte;
 	unsigned int WriteCounter;
-	unsigned int XorFlagsCounter;
-	unsigned int XorBitsCounter;
+	unsigned int XoredCounter;
 
 	SpecialFlagByte = **SourcePtr;
 	(*SourcePtr)++;
-    if ((*SourcePtr) >= CommonData.EndPtr)
-    {
-       return;
-    }
-	WriteCounter = XorFlagsCounter = XorBitsCounter = 0; // Stores bytes we've written to DMD Ram
+	WriteCounter = XoredCounter = 0;         // Stores bytes we've written to DMD Ram
 	do
 	{
 		ch = **SourcePtr;
 		(*SourcePtr)++;
-        if ((*SourcePtr) >= CommonData.EndPtr)
-        {
-           return;
-        }
 		if (ch == SpecialFlagByte)
 		{
 			unsigned char Value1 = **SourcePtr;
 			(*SourcePtr)++;
-            if ((*SourcePtr) >= CommonData.EndPtr)
-            {
-               return;
-            }
 			unsigned int Value2 = **SourcePtr;
 			(*SourcePtr)++;
-            if ((*SourcePtr) >= CommonData.EndPtr)
-            {
-               return;
-            }
 			do
 			{
 				WriteNext8BitValue(DestPtr,&WriteCounter, 0x00, Type);
-				WriteNext8BitValue(XorFlagsPtr,&XorFlagsCounter, 0xFF, Type);
-				WriteNext8BitValue(XorBitsPtr,&XorBitsCounter, Value2, Type);
+				WriteNext8BitValue(XoredPtr,&XoredCounter, Value2, Type);
 			} while ((--Value1) && (WriteCounter < DMD_PAGE_BYTES));
 		}
 		else
 		{
 			WriteNext8BitValue(DestPtr,&WriteCounter, ch, Type);
-			WriteNext8BitValue(XorFlagsPtr,&XorFlagsCounter,0x00,Type);
-			WriteNext8BitValue(XorBitsPtr,&XorBitsCounter,0x00,Type);
+			WriteNext8BitValue(XoredPtr,&XoredCounter,0x00,Type);
 		}
 	} while (WriteCounter < DMD_PAGE_BYTES);
 }
@@ -4361,13 +3762,10 @@ void DMD::Decode_08or09(unsigned char **SourcePtr, unsigned char **DestPtr, unsi
 	unsigned char pattern;
 	unsigned int WriteCounter;
 	unsigned int SkippedCounter;
+//	AfxMessageBox("0809This image includes SKIPPING pixels, at this time skipped pixels are drawn as OFF pixels.");
 
 	count = **SourcePtr;
 	(*SourcePtr)++;
-    if ((*SourcePtr) >= CommonData.EndPtr)
-    {
-        return;
-    }
 	WriteCounter = SkippedCounter = 0;         // Stores bytes we've written to DMD Ram
 	if (!count)
 	{
@@ -4377,20 +3775,12 @@ void DMD::Decode_08or09(unsigned char **SourcePtr, unsigned char **DestPtr, unsi
 	{
 		count = **SourcePtr;
 		(*SourcePtr)++;
-        if ((*SourcePtr) >= CommonData.EndPtr)
-        {
-           return;
-        }
 		if (count)
 		{
 			do
 			{
 				pattern = **SourcePtr;
 				(*SourcePtr)++;
-                if ((*SourcePtr) >= CommonData.EndPtr)
-                {
-                   return;
-                }
 				WriteNext8BitValue(DestPtr,&WriteCounter, pattern, Type);
 				WriteNext8BitValue(SkippedPtr,&SkippedCounter, 0x00, Type);
 			}
@@ -4403,10 +3793,6 @@ void DMD::Decode_08or09(unsigned char **SourcePtr, unsigned char **DestPtr, unsi
 RepeatSkips:
 		count = **SourcePtr;
 		(*SourcePtr)++;
-        if ((*SourcePtr) >= CommonData.EndPtr)
-        {
-           return;
-        }
 		if (count)
 		{
 			do
@@ -4554,6 +3940,7 @@ void DMD::Decode_0Aor0B(unsigned char **SourcePtr, unsigned char **DestPtr, unsi
 	int i;
 	unsigned int WriteCounter;
 	unsigned int SkippedCounter;
+//	AfxMessageBox("0A0BThis image includes SKIPPING pixels, at this time skipped pixels are drawn as OFF pixels.");
 
 	Header.ReadMask = 0x80;
 	WriteCounter = SkippedCounter = 0;         // Stores bytes we've written to DMD Ram
@@ -4562,16 +3949,8 @@ void DMD::Decode_0Aor0B(unsigned char **SourcePtr, unsigned char **DestPtr, unsi
 	{
 		Header.RepeatBytes[i] = **SourcePtr;
 		(*SourcePtr)++;
-        if ((*SourcePtr) >= CommonData.EndPtr)
-        {
-           return;
-        }
 	}
 	count = ReadNext8BitValue(&Header,SourcePtr);
-    if ((*SourcePtr) >= CommonData.EndPtr)
-    {
-       return;
-    }
 	if (!count)
 	{
 		goto BulkSkips;
@@ -4579,19 +3958,11 @@ void DMD::Decode_0Aor0B(unsigned char **SourcePtr, unsigned char **DestPtr, unsi
 	while (1)
 	{
 		count = ReadNext8BitValue(&Header,SourcePtr);
-        if ((*SourcePtr) >= CommonData.EndPtr)
-        {
-           return;
-        }
 		if (count)
 		{
 			do
 			{
 				WriteNext8BitValue(DestPtr,&WriteCounter, (ReadNext8BitValue(&Header,SourcePtr)), Type);
-                if ((*SourcePtr) >= CommonData.EndPtr)
-                {
-                   return;
-                }
 				WriteNext8BitValue(SkippedPtr,&SkippedCounter, 0x00, Type);
 			} while ((--count) && (WriteCounter < DMD_PAGE_BYTES));
 		}
@@ -4601,10 +3972,6 @@ void DMD::Decode_0Aor0B(unsigned char **SourcePtr, unsigned char **DestPtr, unsi
 		}
 BulkSkips:
 		count = ReadNext8BitValue(&Header,SourcePtr);
-        if ((*SourcePtr) >= CommonData.EndPtr)
-        {
-           return;
-        }
 		if (count)
 		{
 			do
@@ -4625,7 +3992,7 @@ BulkSkips:
 	}
 }
 
-void DMD::ButtonHandlerNext(int count)
+void DMD::OnButtonNextGraphic() 
 {
 #if ALLOW_MOUSE_TO_REPEAT
 	int i = 0;
@@ -4643,7 +4010,7 @@ void DMD::ButtonHandlerNext(int count)
 
 	CheckKeyStateForDebugFlags();
 
-/*	if (!NaggedOnce)
+	if (!NaggedOnce)
 	{
 		if (!(PassedInPointer->MiscNagsShown[NAG_INDEX_DMD_ENTERKEY_TIP]))
 		{
@@ -4656,34 +4023,13 @@ void DMD::ButtonHandlerNext(int count)
 				AfxGetApp()->WriteProfileInt(REGISTRY_NAG_SCREENS, NagRegistryKeyText[NAG_INDEX_DMD_ENTERKEY_TIP], TRUE);
 			}
 		}
-	}*/
+	}
 	NaggedOnce = 1;
 
-	DecodeNextIndex(count);
+	DecodeNextIndex();
 }
 
-void DMD::OnButtonNextGraphic() 
-{
-   ButtonHandlerNext(1);
-}
-
-void DMD::OnButtonNextGraphicx2() 
-{
-   ButtonHandlerNext(2);
-}
-
-void DMD::OnButtonNextGraphicAll() 
-{
-	int countInvalid = 0;
-   unsigned long index = 0;
-   while( countInvalid<200 ) {
-	    DecodeFullFrameGraphic(index);
-		if( FullFrameImageData.Planes.Plane0.Plane_Status !=  PLANE_STATUS_VALID ) countInvalid++;
-		index += 2;	
-   }
-}
-
-void DMD::ButtonHandlerPrevious(int count)
+void DMD::OnButtonPreviousGraphic() 
 {
 #if ALLOW_MOUSE_TO_REPEAT
 	int i = 0;
@@ -4701,17 +4047,7 @@ void DMD::ButtonHandlerPrevious(int count)
 
 	CheckKeyStateForDebugFlags();
 
-	DecodePreviousIndex(count);
-}
-
-void DMD::OnButtonPreviousGraphic() 
-{
-   ButtonHandlerPrevious(1);
-}
-
-void DMD::OnButtonPreviousGraphicx2() 
-{
-   ButtonHandlerPrevious(2);
+	DecodePreviousIndex();
 }
 
 void DMD::InvalidateDMDPages()
@@ -4872,9 +4208,7 @@ void DMD::UpdateStaticTextBoxes()
 void DMD::UpdateControls()
 {
 	BOOL bEnablePrev = FALSE;
-	BOOL bEnablePrevX2 = FALSE;
 	BOOL bEnableNext = FALSE;
-	BOOL bEnableNextX2 = FALSE;
 
 	switch (dialogType)
 	{
@@ -4883,14 +4217,9 @@ void DMD::UpdateControls()
 			{
 				bEnablePrev = TRUE;
 			}
-            if (FullFrameImageData.CurrentImageIndex > 1)
-            {
-                bEnablePrevX2 = TRUE;
-            }
 			//if (FullFrameImageData.CurrentImageIndex < MAX_GRAPHIC_INDEX)
 			{
 				bEnableNext = TRUE;
-                bEnableNextX2= TRUE;
 			}
 			break;
 
@@ -4900,17 +4229,9 @@ void DMD::UpdateControls()
 			{
 				bEnablePrev = TRUE;
 			}
-			if ((VariableSizedImageData.CurrentTableIndex > VariableSizedImageData.minTableIndex) || ((VariableSizedImageData.CurrentTableIndex == VariableSizedImageData.minTableIndex) && (VariableSizedImageData.CurrentImageIndex > VariableSizedImageData.minImageIndex+1)))
-			{
-				bEnablePrevX2 = TRUE;
-			}
 			if ((VariableSizedImageData.CurrentTableIndex < VariableSizedImageData.maxTableIndex) || ((VariableSizedImageData.CurrentTableIndex == VariableSizedImageData.maxTableIndex) && (VariableSizedImageData.CurrentImageIndex < VariableSizedImageData.maxImageIndex)))
 			{
 				bEnableNext = TRUE;
-			}
-			if ((VariableSizedImageData.CurrentTableIndex < VariableSizedImageData.maxTableIndex) || ((VariableSizedImageData.CurrentTableIndex == VariableSizedImageData.maxTableIndex) && (VariableSizedImageData.CurrentImageIndex < VariableSizedImageData.maxImageIndex-1)))
-			{
-				bEnableNextX2 = TRUE;
 			}
 			break;
 
@@ -4921,16 +4242,11 @@ void DMD::UpdateControls()
 	//
 	m_PreviousGraphic.EnableWindow(bEnablePrev);
 	m_NextGraphic.EnableWindow(bEnableNext);
-	m_PreviousGraphicX2.EnableWindow(bEnablePrevX2);
-	m_NextGraphicX2.EnableWindow(bEnableNextX2);
 }
 
 void DMD::OnCheckSkipped() 
 {
 	InvalidateDMDPages();
-}
-
-void DMD::OnCheckExport() {
 }
 
 void DMD::OnCheckXored() 
@@ -5059,7 +4375,7 @@ void DMD::OnTimer(UINT nIDEvent)
 						switch (NextDebounceState)
 						{
 							case DEBOUNCE_STATE_DONE        :
-								DecodeNextIndex(1);
+								DecodeNextIndex();
 								break;
 							case DEBOUNCE_STATE_DEBOUNCING  :
 								if (NextDebounce)
@@ -5082,7 +4398,7 @@ void DMD::OnTimer(UINT nIDEvent)
 							switch (PreviousDebounceState)
 							{
 								case DEBOUNCE_STATE_DONE        :
-									DecodePreviousIndex(1);
+									DecodePreviousIndex();
 									break;
 								case DEBOUNCE_STATE_DEBOUNCING  :
 									if (PreviousDebounce)
@@ -5120,17 +4436,9 @@ void DMD::OnLButtonDown(UINT nFlags, CPoint point)
 	CPoint pos;
 	CRect rec;
 	int InButton = 0;
-    int InTitleBox = 0;
-    CStatic *pTitleBox = NULL;
-
 	if (GetCursorPos(&pos))
 	{
 		m_NextGraphic.GetWindowRect(&rec);
-		if (rec.PtInRect(pos))
-		{
-			InButton = 1;
-		}
-		m_NextGraphicX2.GetWindowRect(&rec);
 		if (rec.PtInRect(pos))
 		{
 			InButton = 1;
@@ -5140,70 +4448,15 @@ void DMD::OnLButtonDown(UINT nFlags, CPoint point)
 		{
 			InButton = 1;
 		}
-		m_PreviousGraphicX2.GetWindowRect(&rec);
-		if (rec.PtInRect(pos))
-		{
-			InButton = 1;
-		}
-        m_Dmd1Title.GetWindowRect(&rec);
-        if (rec.PtInRect(pos))
-        {
-            InTitleBox = 1;
-            pTitleBox = &m_Dmd1Title;
-        }
-        m_Dmd2Title.GetWindowRect(&rec);
-        if (rec.PtInRect(pos))
-        {
-            InTitleBox = 2;
-            pTitleBox = &m_Dmd2Title;
-        }
-        m_Dmd3Title.GetWindowRect(&rec);
-        if (rec.PtInRect(pos))
-        {
-            InTitleBox = 3;
-            pTitleBox = &m_Dmd3Title;
-        }
 	}
-	if (!InButton && !InTitleBox)
+	if (!InButton)
 	{
 		PostMessage(WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM(point.x, point.y));
 	}
-    if (InTitleBox && (pTitleBox != NULL))
-    {
-        CString str;
-        pTitleBox->GetWindowText(str);
-        if (InTitleBox == selectedTitleBox)
-        {
-           // They re-clicked the currently selected title box, so unselect it
-           pTitleBox->SetWindowText("Clipboard Off");
-           selectedTitleBox = 0;
-        }
-        else
-        {
-           // They clicked a new title box, set it as the currently selected title box
-           pTitleBox->SetWindowText("Clipboard On");
-           selectedTitleBox = InTitleBox;
-           OnPaint();  // get current clipboard pane data
-        }
-        Sleep(500);
-        pTitleBox->SetWindowText(str);
-    }
 	CDialog::OnLButtonDown(nFlags, point);
 }
 
 void DMD::OnLButtonUp(UINT nFlags, CPoint point) 
 {
 	CDialog::OnLButtonUp(nFlags, point);
-}
-
-
-void DMD::OnButtonWipe() 
-{
-	memset(PreviousPlaneDataPane0,0,sizeof(PreviousPlaneDataPane0));
-	memset(PreviousPlaneDataPane1,0,sizeof(PreviousPlaneDataPane1));
-
-	m_Wipe.EnableWindow(FALSE);
-    bWiped = TRUE;
-
-	InvalidateDMDPages();
 }

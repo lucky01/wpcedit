@@ -3,10 +3,10 @@
 
 
 #define APPLICATION_TITLE     "WPCEdit"
-#define APPLICATION_COPYRIGHT "Copyright (c) 2015"
-#define APPLICATION_AUTHOR    "Garrett Lee, mrglee@yahoo.com, export by steve"
+#define APPLICATION_COPYRIGHT "Copyright (c) 2011"
+#define APPLICATION_AUTHOR    "Garrett Lee, mrglee@yahoo.com"
 
-#define APPLICATION_VERSION   2.3
+#define APPLICATION_VERSION   2.0
 //
 // Revision History
 // ----------------
