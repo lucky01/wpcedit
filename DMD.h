@@ -41,9 +41,9 @@
 #define PLANE0_ON      0x01
 #define PLANE0_XORED   0x02
 #define PLANE0_SKIPPED 0x04
-#define PLANE1_ON      0x08
-#define PLANE1_XORED   0x10
-#define PLANE1_SKIPPED 0x20
+#define PLANE1_ON      0x10
+#define PLANE1_XORED   0x20
+#define PLANE1_SKIPPED 0x40
 
 #define DMD_FULLFRAME_PAINT_DIM     0x01
 #define DMD_FULLFRAME_PAINT_MEDIUM  0x02
@@ -65,15 +65,15 @@
 #define DEBUG_KEY_BIT_SHIFTKEYS           0x01
 #define DEBUG_KEY_BIT_CONTROLKEYS         0x02
 
-const static char StatusText [(PLANE_STATUS_IMAGEOUTOFRANGE + 1)][16] = 
+const static char StatusText [(PLANE_STATUS_IMAGEOUTOFRANGE + 1)][32] = 
 	{
 		"Valid Decoding",
-		"Invalid (1)",
-		"Invalid (2)",
-		"Invalid (3)",
-		"Invalid (4)",
-		"Invalid (5)",
-		"Invalid (6)",
+		"Invalid",
+		"Unknown Type",
+		"Unimplemented Type",
+		"Table out of Range",
+		"Bad Dimension",
+		"Image out of Range",
 	};
 
 
@@ -86,15 +86,18 @@ struct COMMONData
 	unsigned char TotalPages;    // includes non-banked, conceptual pages (2 pages nonbanked)
 	unsigned char BasePageIndex;
 	LPTSTR StartPtr;
+	unsigned char *EndPtr;
 };
 
+typedef unsigned char Plane[DMD_PAGE_BYTES];
 struct DMDPlane
 {
 	unsigned char Plane_Status;
-	unsigned char Plane_Data[DMD_PAGE_BYTES];
-	unsigned char Plane_Skipped[DMD_PAGE_BYTES];
-	unsigned char Plane_Xored[DMD_PAGE_BYTES];
 	unsigned int Plane_Size;
+	Plane Plane_Data;
+	Plane Plane_Skipped;
+	Plane Plane_XorFlags;
+	Plane Plane_XorBits;
 };
 
 struct DMDPlanes
@@ -138,6 +141,14 @@ struct ImageHeader
 	unsigned char ReadMask;
 };
 
+typedef enum
+{
+   ThisPixel_Off = 0,
+   ThisPixel_On,
+   ThisPixel_Xored,
+   ThisPixel_Skipped
+} ThisPixel;
+
 class DMD : public CDialog
 {
 // Construction
@@ -154,14 +165,22 @@ private:
 	VARIABLESIZEDImageData VariableSizedImageData;;
 	int dialogType;
 	int debugKeyBitmask;
+    int selectedTitleBox;
 	CString TmpStr;
+    BOOL bWiped;
+
+	Plane PreviousPlaneDataPane0;
+	Plane PreviousPlaneDataPane1;
 
 	void CheckKeyStateForDebugFlags();
 	void PaintDMDPanelImage(CPaintDC *pDc, DMDPlanes* pPlanes, unsigned char PaneMask);
 	void DecodePlaneInit(DMDPlane *pPlane);
 	void DecodeCurrentIndex(void);
-	void DecodePreviousIndex(void);
-	void DecodeNextIndex(void);
+	void DecodePreviousIndex(int count);
+	void DecodeNextIndex(int count);
+    void ButtonHandlerNext(int count);
+    void ButtonHandlerPrevious(int count);
+
 	void DecodeVariableSizedImage(unsigned char **Source, DMDPlanes *pPlanes, int TableIndex);
 	unsigned char DecodeVariableSizedImage_Centered(unsigned char **SourcePtr, unsigned char **DestPtr, int ImageHeight, int ImageWidth);
 	void DecodeVariableSizedImageIndex_NoHeader(unsigned char **SourcePtr, DMDPlanes *pPlanes, int TableHeight);
@@ -175,8 +194,8 @@ private:
 	void Decode_03(unsigned char **Source, unsigned char *Dest);
 	void Decode_04(unsigned char **Source, unsigned char *Dest);
 	void Decode_05(unsigned char **Source, unsigned char *Dest);
-	void Decode_06(unsigned char **Source, unsigned char *Dest, unsigned char *Xored);
-	void Decode_07(unsigned char **Source, unsigned char *Dest, unsigned char *Xored);
+	void Decode_06(unsigned char **Source, unsigned char *Dest, unsigned char *XorFlags, unsigned char *XorBits);
+	void Decode_07(unsigned char **Source, unsigned char *Dest, unsigned char *XorFlags, unsigned char *XorBits);
 	void Decode_08(unsigned char **Source, unsigned char *Dest, unsigned char *Skipped);
 	void Decode_09(unsigned char **Source, unsigned char *Dest, unsigned char *Skipped);
 	void Decode_0A(unsigned char **Source, unsigned char *Dest, unsigned char *Skipped);
@@ -186,7 +205,7 @@ private:
 	void WriteNext8BitValue(unsigned char **DestPtr, unsigned int *WriteCounterPtr,unsigned char ch, unsigned char Type);
 	void Decode_01or02(unsigned char **SourcePtr, unsigned char **DestPtr, unsigned char Type);
 	void Decode_04or05(unsigned char **SourcePtr, unsigned char **DestPtr, unsigned char Type);
-	void Decode_06or07(unsigned char **SourcePtr, unsigned char **DestPtr, unsigned char **XoredPtr, unsigned char Type);
+	void Decode_06or07(unsigned char **SourcePtr, unsigned char **DestPtr, unsigned char **XorFlagsPtr, unsigned char **XorBitsPtr, unsigned char Type);
 	void Decode_08or09(unsigned char **SourcePtr, unsigned char **DestPtr, unsigned char **Skipped, unsigned char Type);
 	void Decode_0Aor0B(unsigned char **SourcePtr, unsigned char **DestPtr, unsigned char **Skipped, unsigned char Type);
 
@@ -232,6 +251,9 @@ private:
 // Dialog Data
 	//{{AFX_DATA(DMD)
 	enum { IDD = IDD_DMD };
+	CButton	m_Wipe;
+	CButton	m_PreviousGraphicX2;
+	CButton	m_NextGraphicX2;
 	CStatic	m_Dmd3Title;
 	CStatic	m_Dmd2Title;
 	CStatic	m_Dmd1Title;
@@ -289,6 +311,9 @@ protected:
 	afx_msg void OnTimer(UINT nIDEvent);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+	afx_msg void OnButtonNextGraphicx2();
+	afx_msg void OnButtonPreviousGraphicx2();
+	afx_msg void OnButtonWipe();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 
