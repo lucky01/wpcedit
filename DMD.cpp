@@ -107,6 +107,7 @@ void DMD::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_WIPE, m_Wipe);
 	DDX_Control(pDX, IDC_BUTTON_PREVIOUS_GRAPHICX2, m_PreviousGraphicX2);
 	DDX_Control(pDX, IDC_BUTTON_NEXT_GRAPHICX2, m_NextGraphicX2);
+	DDX_Control(pDX, IDC_CHECK_EXPORT, m_Export);
 	DDX_Control(pDX, IDC_STATIC_DMD3_HEADER, m_Dmd3Title);
 	DDX_Control(pDX, IDC_STATIC_DMD2_HEADER, m_Dmd2Title);
 	DDX_Control(pDX, IDC_STATIC_DMD1_HEADER, m_Dmd1Title);
@@ -133,6 +134,7 @@ BEGIN_MESSAGE_MAP(DMD, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_PREVIOUS_GRAPHIC, OnButtonPreviousGraphic)
 	ON_BN_CLICKED(IDC_CHECK_SKIPPED, OnCheckSkipped)
 	ON_BN_CLICKED(IDC_CHECK_XORED, OnCheckXored)
+	ON_BN_CLICKED(IDC_CHECK_EXPORT, OnCheckExport)
 	ON_LBN_SELCHANGE(IDC_LIST1, OnSelchangeList1)
 	ON_WM_CLOSE()
 	ON_WM_CTLCOLOR()
@@ -227,8 +229,8 @@ BOOL DMD::OnInitDialog()
 			GetDlgItem(IDC_STATIC_DMD1_HEADER)->SetWindowText("Medium Pixels Plane");
 			GetDlgItem(IDC_STATIC_DMD2_HEADER)->SetWindowText("Dim Pixels Plane");
 			GetDlgItem(IDC_STATIC_DMD3_HEADER)->SetWindowText("Blended Planes");
-			GetDlgItem(IDC_BUTTON_PREVIOUS_GRAPHIC)->SetWindowText("<--Previous Graphic");
-			GetDlgItem(IDC_BUTTON_NEXT_GRAPHIC)->SetWindowText("Next Graphic -->");
+			GetDlgItem(IDC_BUTTON_PREVIOUS_GRAPHIC)->SetWindowText("<- Prev");
+			GetDlgItem(IDC_BUTTON_NEXT_GRAPHIC)->SetWindowText("Next ->");
 			GetDlgItem(IDC_CHECK_XORED)->ShowWindow(SW_SHOW);
 			GetDlgItem(IDC_CHECK_SKIPPED)->ShowWindow(SW_SHOW);
 			WindowVerticalShift = 30;
@@ -2816,12 +2818,244 @@ int DMD::Init()
 
 	return 0;
 }
+void DMD::exportCurrent() {
 
+	DMDPlanes* pPlanes = &FullFrameImageData.Planes;
+	unsigned char *Plane_0Ptr      = pPlanes->Plane0.Plane_Data;
+	unsigned char *Plane_0XorFlags = pPlanes->Plane0.Plane_XorFlags;
+	unsigned char *Plane_0XorBits  = pPlanes->Plane0.Plane_XorBits;
+	unsigned char *Plane_0Skipped  = pPlanes->Plane0.Plane_Skipped;
+	unsigned char *Plane_1Ptr      = pPlanes->Plane1.Plane_Data;
+	unsigned char *Plane_1XorFlags = pPlanes->Plane1.Plane_XorFlags;
+	unsigned char *Plane_1XorBits  = pPlanes->Plane1.Plane_XorBits;
+	unsigned char *Plane_1Skipped  = pPlanes->Plane1.Plane_Skipped;
+    unsigned char *Plane_0Previous = PreviousPlaneDataPane0;
+    unsigned char *Plane_1Previous = PreviousPlaneDataPane1;
+	int i,j,k;
+	int RowIndex, ColumnIndex;
+    ThisPixel thisPixel0;
+    ThisPixel thisPixel1;
+	unsigned char ReadMask;
+	unsigned char PLANE_BITS;
+
+	if( FullFrameImageData.Planes.Plane0.Plane_Status ==  PLANE_STATUS_VALID ) {
+		// create a RGBA char array from both planes and encode it with LodePNG
+		// then save to disk
+		int w = 128; int h = 32;
+		unsigned char* image = (unsigned char*)malloc( w * h * 4 );
+		memset(image, 0, w*h*4);
+		unsigned char* p = image;
+		unsigned char* pSrc = FullFrameImageData.Planes.Plane0.Plane_Data;
+		unsigned char* pSrc1 = FullFrameImageData.Planes.Plane1.Plane_Data;
+
+	for (i = 0; i < DMD_ROWS; i++)
+	{
+		for (j = 0; j < (DMD_COLUMNS/8); j++)
+		{
+			for (ReadMask = 0x01, k = 0; k < 8; k++,ReadMask <<= 1)
+			{
+				PLANE_BITS = 0x00;
+				if (*Plane_0Ptr & ReadMask)
+				{
+					PLANE_BITS |= PLANE0_ON;
+				}
+				if (*Plane_0Skipped & ReadMask)
+				{
+					PLANE_BITS |= PLANE0_SKIPPED;
+				}
+				if (*Plane_0XorFlags & ReadMask)
+				{
+                    if (*Plane_0XorBits & ReadMask)
+                    {
+					   PLANE_BITS |= PLANE0_XORED; // XOR flag <and> XOR bit then flip bit from previous display
+                    }
+                    else
+                    {
+                       PLANE_BITS |= PLANE0_SKIPPED; // XOR flag <and NOT> XOR bit, then treat it as a skip
+                    }
+				}
+				if (*Plane_1Ptr & ReadMask)
+				{
+					PLANE_BITS |= PLANE1_ON;
+				}
+				if (*Plane_1Skipped & ReadMask)
+				{
+					PLANE_BITS |= PLANE1_SKIPPED;
+				}
+				if (*Plane_1XorFlags & ReadMask)
+				{
+                    if (*Plane_1XorBits & ReadMask)
+                    {
+					   PLANE_BITS |= PLANE1_XORED; // XOR flag <and> XOR bit then flip bit from previous display
+                    }
+                    else
+                    {
+                       PLANE_BITS |= PLANE1_SKIPPED; // XOR flag <and NOT> XOR bit, then treat it as a skip
+                    }
+				}
+
+				//
+				ColumnIndex = ((((j * 8) + k)) * PIXEL_WIDTH);
+				RowIndex = (i * PIXEL_HEIGHT);
+
+				//
+				// Determine what color to show for medium colored plane
+				//
+				if (true)
+				{
+                    thisPixel0 = ThisPixel_Off;
+					if (PLANE_BITS & PLANE0_ON)
+					{
+                       thisPixel0 = ThisPixel_On;
+					}
+					else if (PLANE_BITS & PLANE0_SKIPPED)
+					{
+						if (false)
+						{
+                           thisPixel0 = ThisPixel_Skipped;
+						}
+						else if (*Plane_0Previous & ReadMask)
+                        {
+                           thisPixel0 = ThisPixel_On;
+						}
+					}
+					else if (PLANE_BITS & PLANE0_XORED)
+					{
+						if (false)
+						{
+                           thisPixel0 = ThisPixel_Xored;
+						}
+						else if (!(*Plane_0Previous & ReadMask))
+                        {
+                           thisPixel0 = ThisPixel_On;
+						}
+					}
+				}
+				
+				RowIndex += ((DMD_ROWS + 1) * PIXEL_HEIGHT);
+
+				//
+				// Determine what color to show for dim plane
+				//
+				if (true)
+				{
+                    thisPixel1 = ThisPixel_Off;
+					if (PLANE_BITS & PLANE1_ON)
+					{
+                       thisPixel1 = ThisPixel_On;
+					}
+					else if (PLANE_BITS & PLANE1_SKIPPED)
+					{
+						if (false)
+						{
+                           thisPixel1 = ThisPixel_Skipped;
+						}
+						else if (*Plane_1Previous & ReadMask)
+						{
+                           thisPixel1 = ThisPixel_On;
+						}
+					}
+					else if (PLANE_BITS & PLANE1_XORED)
+					{
+						if (false)
+						{
+                           thisPixel1 = ThisPixel_Xored;
+						}
+						else if (!(*Plane_1Previous & ReadMask))
+						{
+                           thisPixel1 = ThisPixel_On;
+						}
+					}
+                    
+				}
+
+                // Save "previous" frame data
+                if (thisPixel0 == ThisPixel_Off)
+                {
+                   *Plane_0Previous &= ~ReadMask;
+                }
+                else if (thisPixel0 == ThisPixel_On)
+                {
+                   *Plane_0Previous |= ReadMask;
+                }
+
+                if (thisPixel1 == ThisPixel_Off)
+                {
+                   *Plane_1Previous &= ~ReadMask;
+                }
+                else if (thisPixel1 == ThisPixel_On)
+                {
+                   *Plane_1Previous |= ReadMask;
+                }
+
+				RowIndex += ((DMD_ROWS + 1) * PIXEL_HEIGHT);
+
+				//
+				// Determine what color to show for blended plane
+				//
+				if (true)
+				{
+                   if ((thisPixel0 == ThisPixel_On) && (thisPixel1 == ThisPixel_On))
+                   {
+                      //pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hBright,0,0,SRCCOPY);
+                      //cbPixel2 = '3'; // pixel bright
+					   *(p+3) = 255; // solid
+					   *p = 255;
+                   }
+                   else if (thisPixel0 == ThisPixel_On)
+                   {
+                      //pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hMedium,0,0,SRCCOPY);
+                      //cbPixel2 = '2'; // pixel medium
+					   *(p+3) = 255; // solid
+					   *p = 170;
+
+                   }
+                   else if (thisPixel1 == ThisPixel_On)
+                   {
+                      //pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hDim,0,0,SRCCOPY);
+					   *(p+3) = 255; // solid
+					   *p = 85;
+                      //cbPixel2 = '1'; // pixel dim
+                   }
+                   else
+                   {
+                      //pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hOff,0,0,SRCCOPY);
+                      //cbPixel2 = '0'; // pixel off
+                   }
+				}
+				p += 4;
+			} // for mask
+			Plane_0Ptr++;
+			Plane_1Ptr++;
+			Plane_0Skipped++;
+			Plane_1Skipped++;
+			Plane_0XorFlags++;
+			Plane_1XorFlags++;
+			Plane_0XorBits++;
+			Plane_1XorBits++;
+            Plane_0Previous++;
+            Plane_1Previous++;
+			
+		}
+       
+	}
+
+
+		char filename[100];
+		sprintf(filename, "export-%04d.png", FullFrameImageData.CurrentImageIndex );
+		free((void*)image);
+
+	}
+
+}
 
 void DMD::DecodeFullFrameGraphic(unsigned long GraphicIndex)
 {
 	DecodeImageToPlane(GraphicIndex, &FullFrameImageData.Planes.Plane0);
 	DecodeImageToPlane((GraphicIndex + 1), &FullFrameImageData.Planes.Plane1);
+	if( m_Export.GetCheck() ) {
+		exportCurrent();
+	}
 }
 
 void DMD::DecodeVariableSizedImageData()
@@ -4407,7 +4641,7 @@ void DMD::ButtonHandlerNext(int count)
 
 	CheckKeyStateForDebugFlags();
 
-	if (!NaggedOnce)
+/*	if (!NaggedOnce)
 	{
 		if (!(PassedInPointer->MiscNagsShown[NAG_INDEX_DMD_ENTERKEY_TIP]))
 		{
@@ -4420,7 +4654,7 @@ void DMD::ButtonHandlerNext(int count)
 				AfxGetApp()->WriteProfileInt(REGISTRY_NAG_SCREENS, NagRegistryKeyText[NAG_INDEX_DMD_ENTERKEY_TIP], TRUE);
 			}
 		}
-	}
+	}*/
 	NaggedOnce = 1;
 
 	DecodeNextIndex(count);
@@ -4434,6 +4668,17 @@ void DMD::OnButtonNextGraphic()
 void DMD::OnButtonNextGraphicx2() 
 {
    ButtonHandlerNext(2);
+}
+
+void DMD::OnButtonNextGraphicAll() 
+{
+	int countInvalid = 0;
+   unsigned long index = 0;
+   while( countInvalid<200 ) {
+	    DecodeFullFrameGraphic(index);
+		if( FullFrameImageData.Planes.Plane0.Plane_Status !=  PLANE_STATUS_VALID ) countInvalid++;
+		index += 2;	
+   }
 }
 
 void DMD::ButtonHandlerPrevious(int count)
@@ -4681,6 +4926,9 @@ void DMD::UpdateControls()
 void DMD::OnCheckSkipped() 
 {
 	InvalidateDMDPages();
+}
+
+void DMD::OnCheckExport() {
 }
 
 void DMD::OnCheckXored() 

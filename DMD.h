@@ -246,7 +246,7 @@ private:
 
 	void DecodeVariableSizedImageData();
 	void DecodeVariableSizedImageIndexToPlane(int TableIndex, int ImageIndex, DMDPlanes *pPlanes);
-
+	void exportCurrent();
 
 // Dialog Data
 	//{{AFX_DATA(DMD)
@@ -261,6 +261,7 @@ private:
 	CListBox	m_PixelColor;
 	CButton	m_Xored;
 	CButton	m_Skipped;
+	CButton	m_Export;
 	CStatic	m_Dmd1;
 	CStatic	m_Dmd2;
 	CStatic	m_Dmd3;
@@ -303,6 +304,7 @@ protected:
 	afx_msg void OnButtonPreviousGraphic();
 	afx_msg void OnCheckSkipped();
 	afx_msg void OnCheckXored();
+	afx_msg void OnCheckExport();
 	afx_msg void OnSelchangeList1();
 	virtual void OnOK();
 	afx_msg void OnClose();
@@ -312,6 +314,7 @@ protected:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnButtonNextGraphicx2();
+	afx_msg void OnButtonNextGraphicAll();
 	afx_msg void OnButtonPreviousGraphicx2();
 	afx_msg void OnButtonWipe();
 	//}}AFX_MSG

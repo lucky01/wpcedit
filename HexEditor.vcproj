@@ -226,10 +226,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\LodePNG.cpp"
-				>
-			</File>
-			<File
 				RelativePath="MainFrm.cpp"
 				>
 				<FileConfiguration
@@ -341,10 +337,6 @@
 			</File>
 			<File
 				RelativePath="HexEditorView.h"
-				>
-			</File>
-			<File
-				RelativePath=".\LodePNG.h"
 				>
 			</File>
 			<File
