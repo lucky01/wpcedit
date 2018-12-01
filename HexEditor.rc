@@ -1,0 +1,782 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\HexEditor.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#include ""afxprint.rc""       // printing/print preview resources\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\HexEditor.ico"
+IDI_ICON28              ICON    DISCARDABLE     "res\\icon28.ico"
+IDI_ICON29              ICON    DISCARDABLE     "res\\icon29.ico"
+IDI_ICON30              ICON    DISCARDABLE     "res\\icon30.ico"
+IDI_ICON31              ICON    DISCARDABLE     "res\\icon31.ico"
+IDI_ICON32              ICON    DISCARDABLE     "res\\icon32.ico"
+IDI_ICON33              ICON    DISCARDABLE     "res\\icon33.ico"
+IDI_ICON34              ICON    DISCARDABLE     "res\\icon34.ico"
+IDI_ICON35              ICON    DISCARDABLE     "res\\icon35.ico"
+IDI_ICON36              ICON    DISCARDABLE     "res\\icon36.ico"
+IDI_ICON37              ICON    DISCARDABLE     "res\\icon37.ico"
+IDI_ICON38              ICON    DISCARDABLE     "res\\icon38.ico"
+IDI_ICON39              ICON    DISCARDABLE     "res\\icon39.ico"
+IDI_ICON41              ICON    DISCARDABLE     "res\\icon41.ico"
+IDI_ICON42              ICON    DISCARDABLE     "res\\icon42.ico"
+IDI_ICON43              ICON    DISCARDABLE     "res\\icon43.ico"
+IDI_ICON44              ICON    DISCARDABLE     "res\\icon44.ico"
+IDI_ICON40              ICON    DISCARDABLE     "res\\icon40.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_MAINFRAME           BITMAP  MOVEABLE PURE   "res\\Toolbar.bmp"
+IDB_BITMAP_PIXEL_BLACK  BITMAP  DISCARDABLE     "res\\bitmap1.bmp"
+IDB_BITMAP_PIXEL_YELLOWDIM BITMAP  DISCARDABLE     "res\\bmp00001.bmp"
+IDB_BITMAP_PIXEL_YELLOWMEDIUM BITMAP  DISCARDABLE     "res\\bmp00002.bmp"
+IDB_BITMAP_PIXEL_YELLOWBRIGHT BITMAP  DISCARDABLE     "res\\bmp00003.bmp"
+IDB_BITMAP_PIXEL_GREYDIM BITMAP  DISCARDABLE     "res\\bmp00004.bmp"
+IDB_BITMAP_PIXEL_GREYBRIGHT BITMAP  DISCARDABLE     "res\\bmp00005.bmp"
+IDB_BITMAP_PIXEL_GREENBRIGHT BITMAP  DISCARDABLE     "res\\bmp00006.bmp"
+IDB_BITMAP_PIXEL_GREENDIM BITMAP  DISCARDABLE     "res\\bmp00007.bmp"
+IDB_BITMAP_PIXEL_GREENMEDIUM BITMAP  DISCARDABLE     "res\\bmp00008.bmp"
+IDB_BITMAP_PIXEL_GREYMEDIUM BITMAP  DISCARDABLE     "res\\bmp00009.bmp"
+IDB_BITMAP_PIXEL_REDMEDIUM BITMAP  DISCARDABLE     "res\\bmp00010.bmp"
+IDB_BITMAP_PIXEL_REDBRIGHT BITMAP  DISCARDABLE     "res\\bmp00011.bmp"
+IDB_BITMAP_PIXEL_REDDIM BITMAP  DISCARDABLE     "res\\bmp00012.bmp"
+IDB_BITMAP_PIXEL_TEALDIM BITMAP  DISCARDABLE     "res\\bmp00013.bmp"
+IDB_BITMAP_PIXEL_TEALBRIGHT BITMAP  DISCARDABLE     "res\\bmp00014.bmp"
+IDB_BITMAP_PIXEL_TEALMEDIUM BITMAP  DISCARDABLE     "res\\bmp00015.bmp"
+IDB_BITMAP_PIXEL_BLUEDIM BITMAP  DISCARDABLE     "res\\bmp00016.bmp"
+IDB_BITMAP_PIXEL_BLUEBRIGHT BITMAP  DISCARDABLE     "res\\bmp00017.bmp"
+IDB_BITMAP_PIXEL_BLUEMEDIUM BITMAP  DISCARDABLE     "res\\bmp00018.bmp"
+IDB_BITMAP_PIXEL_VIOLETDIM BITMAP  DISCARDABLE     "res\\bmp00019.bmp"
+IDB_BITMAP_PIXEL_VIOLETBRIGHT BITMAP  DISCARDABLE     "res\\bmp00020.bmp"
+IDB_BITMAP_PIXEL_VIOLETMEDIUM BITMAP  DISCARDABLE     "res\\bmp00021.bmp"
+IDB_TRANSPARENT_SPLASH  BITMAP  DISCARDABLE     "Splash8.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_MAINFRAME TOOLBAR DISCARDABLE  16, 15
+BEGIN
+    BUTTON      ID_FILE_NEW
+    BUTTON      ID_FILE_OPEN
+    BUTTON      ID_FILE_SAVE
+    SEPARATOR
+    BUTTON      ID_EDIT_CUT
+    BUTTON      ID_EDIT_COPY
+    BUTTON      ID_EDIT_PASTE
+    SEPARATOR
+    BUTTON      ID_FILE_PRINT
+    SEPARATOR
+    BUTTON      ID_VIEW_DMDGRAPHICS
+    BUTTON      ID_VIEW_FONTDATA
+    BUTTON      ID_VIEW_ANIMATIONDATA
+    BUTTON      ID_EDIT_SOUNDTABLE
+    BUTTON      ID_EDIT_SWITCHMATRIXTABLE
+    BUTTON      ID_EDIT_TEXTTABLE
+    SEPARATOR
+    BUTTON      ID_APP_ABOUT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU PRELOAD DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&New\tCtrl+N",                ID_FILE_NEW
+        MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
+        MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
+        MENUITEM "Save &As...",                 ID_FILE_SAVE_AS
+        MENUITEM SEPARATOR
+        MENUITEM "&Print...\tCtrl+P",           ID_FILE_PRINT
+        MENUITEM "Print Pre&view",              ID_FILE_PRINT_PREVIEW
+        MENUITEM "P&rint Setup...",             ID_FILE_PRINT_SETUP
+        MENUITEM SEPARATOR
+        MENUITEM "Recent File",                 ID_FILE_MRU_FILE1, GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_APP_EXIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "&DMD Graphics",               ID_VIEW_DMDGRAPHICS
+        MENUITEM "&Font Data",                  ID_VIEW_FONTDATA
+        MENUITEM "&Animation Data",             ID_VIEW_ANIMATIONDATA
+        MENUITEM "&Sound Table",                ID_EDIT_SOUNDTABLE
+        MENUITEM "Switch &Matrix Table",        ID_EDIT_SWITCHMATRIXTABLE
+        MENUITEM "&Text Strings",               ID_EDIT_TEXTTABLE
+        MENUITEM SEPARATOR
+        POPUP "&Patch WPC", GRAYED
+        BEGIN
+            MENUITEM "&Checksum Fixup",             ID_EDIT_PATCHWPC_CHECKSUMFIXUP
+
+            MENUITEM "&Version Number",             ID_EDIT_PATCHWPC_VERSIONNUMBER
+
+            MENUITEM "&Security PIC Inhibit",       ID_EDIT_PATCHWPC_SECURITYPICINHIBIT
+
+            MENUITEM "&Quick Boot",                 ID_EDIT_PATCHWPC_QUICKBOOT
+
+        END
+        POPUP "&Game Specific", GRAYED
+        BEGIN
+            POPUP "Cactus Canyon"
+            BEGIN
+                MENUITEM "Add DMD Match Graphic",       ID_EDIT_GAMESPECIFIC_CACTUSCANYON_ADDDMDMATCHGRAPHIC
+
+            END
+            POPUP "Demolition Man"
+            BEGIN
+                MENUITEM "&Create HA-4 ROM",            ID_EDIT_GAMESPECIFIC_DEMOLITIONMAN_CREATEHA4ROM
+
+            END
+            POPUP "&Indiana Jones"
+            BEGIN
+                MENUITEM "&No Hate Voice Clip",         ID_EDIT_GAMESPECIFIC_INDIANAJONES_NOHATE
+
+                MENUITEM "&Correct 'ARC' --> 'ARK'",    ID_EDIT_GAMESPECIFIC_INDIANAJONES_CORRECTARCARK
+
+                MENUITEM SEPARATOR
+                MENUITEM "Create IJONE-HK1",            ID_EDIT_GAMESPECIFIC_INDIANAJONES_CREATEIJONEHK1
+
+            END
+            POPUP "&Medieval Madness"
+            BEGIN
+                MENUITEM "Enable &Profanity ROM",       ID_EDIT_GAMESPECIFIC_MEDIEVALMADNESS_ENABLEPROFANITYROM
+
+                MENUITEM SEPARATOR
+                MENUITEM "Create MM_109BH",             ID_EDIT_GAMESPECIFIC_MEDIEVALMADNESS_CREATEMM109BH
+
+                MENUITEM "Create MM_109CH",             ID_EDIT_GAMESPECIFIC_MEDIEVALMADNESS_CREATEMM109CH
+
+            END
+            POPUP "&No Good Gophers"
+            BEGIN
+                MENUITEM "&Fix all bugs in 1.3 firmware", 
+                                                        ID_EDIT_GAMESPECIFIC_NOGOODGOPHERS_FIXALLBUGSIN
+
+            END
+            POPUP "The Machine: &Bride of Pinbot"
+            BEGIN
+                MENUITEM "&Fix Reset Bug",              ID_EDIT_GAMESPECIFIC_BRIDEOFPINBOT_FIXRESETBUG
+
+            END
+            POPUP "The &Shadow"
+            BEGIN
+                MENUITEM "Fix L-6 &Volume Bug",         ID_EDIT_GAMESPECIFIC_THESHADOW_FIXL6VOLUMEBUG
+
+                MENUITEM "&Family Mode II",             ID_EDIT_GAMESPECIFIC_THESHADOW_FAMILYMODEII
+
+                MENUITEM "&No ""Flippers"" Nag",        ID_EDIT_GAMESPECIFIC_THESHADOW_NOFLIPPERSNAG
+
+                MENUITEM SEPARATOR
+                MENUITEM "Create SHAD_HKH_1",           ID_EDIT_GAMESPECIFIC_THESHADOW_CREATESHADHKH1
+
+                MENUITEM "Create SHAD_HKH_2",           ID_EDIT_GAMESPECIFIC_THESHADOW_CREATESHADHKH2
+
+                MENUITEM "Create SHAD_HKH_3",           ID_EDIT_GAMESPECIFIC_THESHADOW_CREATESHADHKH3
+
+                MENUITEM "Create SHAD_HKH_4",           ID_EDIT_GAMESPECIFIC_THESHADOW_CREATESHADHKH4
+
+                MENUITEM "Create SHAD_HKH_5",           ID_EDIT_GAMESPECIFIC_THESHADOW_CREATESHADHKH5
+
+                MENUITEM "Create SHAD_HKH_6",           ID_EDIT_GAMESPECIFIC_THESHADOW_CREATESHADHKH6
+
+            END
+            POPUP "Twilight Zone"
+            BEGIN
+                MENUITEM "Create TZone94CH",            ID_EDIT_GAMESPECIFIC_TWILIGHTZONE_CREATETZ94CH
+
+            END
+        END
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
+        MENUITEM "S&plit",                      ID_WINDOW_SPLIT
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About WPCEdit...",           ID_APP_ABOUT
+        MENUITEM SEPARATOR
+        MENUITEM "Software Limitations",        IDD_LIMITATIONS
+    END
+END
+
+IDR_CONTEXT MENU DISCARDABLE 
+BEGIN
+    POPUP "POPUP"
+    BEGIN
+        MENUITEM "Insert Bytes...",             ID_CONTEXT_INSERTBYTES
+        MENUITEM SEPARATOR
+        POPUP "Edit Data As"
+        BEGIN
+            MENUITEM "Hex",                         ID_CONTEXT_EDITHEX
+            MENUITEM "Integer",                     ID_CONTEXT_EDITINTEGER
+            MENUITEM "String",                      ID_CONTEXT_EDITSTRING
+        END
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS PRELOAD MOVEABLE PURE 
+BEGIN
+    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL
+    "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL
+    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL
+    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL
+    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL
+    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL
+    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT
+    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT
+    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL
+    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT
+    VK_F6,          ID_NEXT_PANE,           VIRTKEY 
+    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 55
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About WPCEdit"
+FONT 8, "MS Sans Serif"
+BEGIN
+    ICON            IDI_ICON28,IDC_STATIC_ABOUTICON,11,17,20,20
+    LTEXT           "",IDC_STATIC_VER,40,10,119,8,SS_NOPREFIX
+    LTEXT           "",IDC_STATIC_CR,40,25,119,8
+	LTEXT           "Export by Steve",IDC_STATIC_CR,40,40,119,8
+    DEFPUSHBUTTON   "OK",IDOK,178,7,50,14,WS_GROUP
+END
+
+IDD_INSERTDATA DIALOG DISCARDABLE  0, 0, 118, 95
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Insert Data"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,7,74,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,61,74,50,14
+    EDITTEXT        IDC_INSERTAMT,7,16,45,14,ES_AUTOHSCROLL
+    LTEXT           "Bytes to insert:",IDC_STATIC,7,7,47,8
+    LTEXT           "Data to insert:",IDC_STATIC,7,33,45,8
+    EDITTEXT        IDC_DATA,7,43,104,14,ES_AUTOHSCROLL
+END
+
+IDD_EDITDATA DIALOG DISCARDABLE  0, 0, 172, 14
+STYLE DS_MODALFRAME | WS_POPUP
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_INPUT,0,0,172,14,ES_AUTOHSCROLL
+END
+
+IDD_PROGRESS DIALOG DISCARDABLE  0, 0, 146, 29
+STYLE DS_MODALFRAME | DS_CONTROL | DS_CENTER | WS_POPUP | WS_VISIBLE | 
+    WS_CAPTION
+CAPTION "Loading..."
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "Progress1",IDC_PROGRESSBAR,"msctls_progress32",0x1,0,0,
+                    146,15
+    LTEXT           "Current Task",IDC_TASK,1,21,114,8
+    CONTROL         "Progress2",IDC_MINIPROGRESSBAR,"msctls_progress32",0x1,
+                    0,15,145,6
+    PUSHBUTTON      "Abort",IDC_ABORT,116,21,30,8
+END
+
+IDD_FORMATVIEW DIALOG DISCARDABLE  0, 0, 339, 167
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Formatted Data View"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,282,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,282,24,50,14
+    CONTROL         "List1",IDC_FVIEW,"SysListView32",LVS_REPORT | 
+                    LVS_EDITLABELS | WS_BORDER | WS_TABSTOP,7,7,269,153
+END
+
+IDD_DMD DIALOGEX 0, 0, 483, 345
+STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "P",IDC_BUTTON_PREVIOUS_GRAPHIC,135, 306, 35, 15 
+	PUSHBUTTON      "W",IDC_BUTTON_WIPE,171, 305, 33, 15 
+	PUSHBUTTON      "P2",IDC_BUTTON_PREVIOUS_GRAPHICX2,93, 306, 38, 15 
+	PUSHBUTTON      "N2",IDC_BUTTON_NEXT_GRAPHICX2,244, 306, 37, 15 
+	CONTROL         "Export",IDC_CHECK_EXPORT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,290, 306, 43, 15
+    DEFPUSHBUTTON   "N",IDC_BUTTON_NEXT_GRAPHIC,209, 306, 31, 15 
+
+
+    CONTROL         "Show XORed pixels as Green",IDC_CHECK_XORED,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,337,303,139,11
+    CONTROL         "Show Skipped pixels as Grey",IDC_CHECK_SKIPPED,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,337,313,139,11
+    LISTBOX         IDC_LIST1,337,327,64,11,LBS_NOINTEGRALHEIGHT | 
+                    LBS_DISABLENOSCROLL | LBS_NOSEL | WS_TABSTOP
+    CONTROL         "Spin1",IDC_SPIN1,"msctls_updown32",UDS_SETBUDDYINT | 
+                    UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | 
+                    WS_TABSTOP,401,327,16,11
+    PUSHBUTTON      "OK",IDOK,426,324,50,14
+    CTEXT           "",IDC_STATIC_USERREG,7,325,282,13,SS_CENTERIMAGE,
+                    WS_EX_STATICEDGE
+    LTEXT           "",IDC_STATIC_DMD1_TEXTBOX,431,22,45,74,0,
+                    WS_EX_CLIENTEDGE
+    LTEXT           "",IDC_STATIC_DMD2_TEXTBOX,431,120,45,74,0,
+                    WS_EX_CLIENTEDGE
+    LTEXT           "",IDC_STATIC_DMD3_TEXTBOX,431,224,45,74,0,
+                    WS_EX_CLIENTEDGE
+    CTEXT           "",IDC_STATIC_DMD1_HEADER,431,3,45,17,0,WS_EX_CLIENTEDGE
+    CTEXT           "",IDC_STATIC_DMD2_HEADER,431,102,45,17,0,
+                    WS_EX_CLIENTEDGE
+    CTEXT           "",IDC_STATIC_DMD3_HEADER,431,205,45,17,0,
+                    WS_EX_CLIENTEDGE
+END
+
+IDD_ABOUT_LIMITATIONS DIALOG DISCARDABLE  0, 0, 304, 226
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "WPCEdit Limitations Note"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,126,204,50,14
+    CTEXT           "WPCEdit presently has the following limitations:",
+                    IDC_STATIC,7,7,290,11
+    LTEXT           "1.  DMD Data for the following games is not decoded properly:  Terminator 2, Gilligans Island, Slugfest, and TOTAN.",
+                    IDC_STATIC,7,23,290,20
+    LTEXT           "2.  Features such as DMD editing, font editing, sound and text functions are not implemented.  Additionally, ROM patching is not implemented.",
+                    IDC_STATIC,7,54,290,23
+    CTEXT           "",IDC_STATIC_MYINFO,7,182,290,17
+    LTEXT           "3.  Some ROMs Animation Table pointers simply point to the font table, so you will get same images in the Font and Animation dialog boxes.",
+                    IDC_STATIC,7,84,290,23
+    LTEXT           "4.  Not all Animation data is complete.  It only displays whatever is found at the Animation Table pointer.  It's likely some ROMs store other animations elsewhere in the ROM, outside of the normal Animation Table.",
+                    IDC_STATIC,7,113,290,30
+END
+
+IDD_NAG DIALOG DISCARDABLE  0, 0, 260, 127
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "Notice"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "I understand and agree",IDOK,25,106,102,14
+    PUSHBUTTON      "I do not agree",IDCANCEL,132,106,102,14
+    EDITTEXT        IDC_EDIT_NAGTEXT,7,7,246,94,ES_MULTILINE | ES_READONLY | 
+                    WS_VSCROLL
+END
+
+IDD_NAGDLG DIALOG DISCARDABLE  0, 0, 186, 65
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,67,31,50,14
+    CONTROL         "Don't tell me this again",IDC_CHECK1,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,49,50,87,8
+    LTEXT           "Static",IDC_STATICBOX,7,7,172,21
+END
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "WPCEdit MFC Application\0"
+            VALUE "FileVersion", "2.3\0"
+            VALUE "InternalName", "WPCEdit\0"
+            VALUE "LegalCopyright", "Copyright (C) 2011\0"
+            VALUE "OriginalFilename", "WPCEdit.EXE\0"
+            VALUE "ProductName", "WPCEdit Application\0"
+            VALUE "ProductVersion", "2.3\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 48
+    END
+
+    IDD_INSERTDATA, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 111
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 88
+    END
+
+    IDD_FORMATVIEW, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 332
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 160
+        HORZGUIDE, 126
+    END
+
+    IDD_DMD, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 476
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 338
+    END
+
+    IDD_ABOUT_LIMITATIONS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 297
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 218
+    END
+
+    IDD_NAG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 253
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 120
+    END
+
+    IDD_NAGDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 58
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE PRELOAD DISCARDABLE 
+BEGIN
+    IDR_MAINFRAME           "WPCEdit\n\nFile\n\n\nWPCEdit.Document\nFile"
+END
+
+STRINGTABLE PRELOAD DISCARDABLE 
+BEGIN
+    AFX_IDS_APP_TITLE       "WPCEdit"
+    AFX_IDS_IDLEMESSAGE     "Ready"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_INDICATOR_EXT        "EXT"
+    ID_INDICATOR_CAPS       "CAP"
+    ID_INDICATOR_NUM        "NUM"
+    ID_INDICATOR_SCRL       "SCRL"
+    ID_INDICATOR_OVR        "OVR"
+    ID_INDICATOR_REC        "REC"
+    ID_INDICATOR_CLOCK      "12:00 am"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_FILE_NEW             "Create a new document\nNew"
+    ID_FILE_OPEN            "Open an existing document\nOpen"
+    ID_FILE_CLOSE           "Close the active document\nClose"
+    ID_FILE_SAVE            "Save the active document\nSave"
+    ID_FILE_SAVE_AS         "Save the active document with a new name\nSave As"
+    ID_FILE_PAGE_SETUP      "Change the printing options\nPage Setup"
+    ID_FILE_PRINT_SETUP     "Change the printer and printing options\nPrint Setup"
+    ID_FILE_PRINT           "Print the active document\nPrint"
+    ID_FILE_PRINT_PREVIEW   "Display full pages\nPrint Preview"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_APP_ABOUT            "Display program information, version number and copyright\nAbout"
+    ID_APP_EXIT             "Quit the application; prompts to save documents\nExit"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_FILE_MRU_FILE1       "Open this document"
+    ID_FILE_MRU_FILE2       "Open this document"
+    ID_FILE_MRU_FILE3       "Open this document"
+    ID_FILE_MRU_FILE4       "Open this document"
+    ID_FILE_MRU_FILE5       "Open this document"
+    ID_FILE_MRU_FILE6       "Open this document"
+    ID_FILE_MRU_FILE7       "Open this document"
+    ID_FILE_MRU_FILE8       "Open this document"
+    ID_FILE_MRU_FILE9       "Open this document"
+    ID_FILE_MRU_FILE10      "Open this document"
+    ID_FILE_MRU_FILE11      "Open this document"
+    ID_FILE_MRU_FILE12      "Open this document"
+    ID_FILE_MRU_FILE13      "Open this document"
+    ID_FILE_MRU_FILE14      "Open this document"
+    ID_FILE_MRU_FILE15      "Open this document"
+    ID_FILE_MRU_FILE16      "Open this document"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_NEXT_PANE            "Switch to the next window pane\nNext Pane"
+    ID_PREV_PANE            "Switch back to the previous window pane\nPrevious Pane"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_WINDOW_SPLIT         "Split the active window into panes\nSplit"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_EDIT_CLEAR           "Erase the selection\nErase"
+    ID_EDIT_CLEAR_ALL       "Erase everything\nErase All"
+    ID_EDIT_COPY            "Copy the selection and put it on the Clipboard\nCopy"
+    ID_EDIT_CUT             "Cut the selection and put it on the Clipboard\nCut"
+    ID_EDIT_FIND            "Find the specified text\nFind"
+    ID_EDIT_PASTE           "Insert Clipboard contents\nPaste"
+    ID_EDIT_REPEAT          "Repeat the last action\nRepeat"
+    ID_EDIT_REPLACE         "Replace specific text with different text\nReplace"
+    ID_EDIT_SELECT_ALL      "Select the entire document\nSelect All"
+    ID_EDIT_UNDO            "Undo the last action\nUndo"
+    ID_EDIT_REDO            "Redo the previously undone action\nRedo"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_VIEW_TOOLBAR         "Show or hide the toolbar\nToggle ToolBar"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    AFX_IDS_SCSIZE          "Change the window size"
+    AFX_IDS_SCMOVE          "Change the window position"
+    AFX_IDS_SCMINIMIZE      "Reduce the window to an icon"
+    AFX_IDS_SCMAXIMIZE      "Enlarge the window to full size"
+    AFX_IDS_SCNEXTWINDOW    "Switch to the next document window"
+    AFX_IDS_SCPREVWINDOW    "Switch to the previous document window"
+    AFX_IDS_SCCLOSE         "Close the active window and prompts to save the documents"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    AFX_IDS_SCRESTORE       "Restore the window to normal size"
+    AFX_IDS_SCTASKLIST      "Activate Task List"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    AFX_IDS_PREVIEW_CLOSE   "Close print preview mode\nCancel Preview"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_VIEW_DMDGRAPHICS     "View and Edit the WPC DOT-Matrix Data"
+    ID_VIEW_FONTDATA        "View and Edit the WPC Font Data"
+    ID_EDIT_PATCHWPC_CHECKSUMFIXUP "Boycott Pinballroms.com"
+    ID_EDIT_PATCHWPC_SECURITYPICINHIBIT 
+                            "Patches a WPC Security ROM so it doesn't care if the security PIC is installed"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_EDIT_GAMESPECIFIC_MEDIEVALMADNESS_ENABLEPROFANITYROM 
+                            "Removes the *bleep* from Howard Hurtz"
+    ID_EDIT_PATCHWPC_INHIBITFREEONLY 
+                            "Removes the ""Free-Only"" mode so coins can be used."
+    ID_EDIT_GAMESPECIFIC_INDIANAJONES_NOHATE 
+                            "Inhibits the ""I Hate the water and I hate you"" sound effect"
+    ID_EDIT_GAMESPECIFIC_INDIANAJONES_CORRECTARCARK 
+                            "Fix the misspelling on the dot matrix display duing multiball"
+    ID_EDIT_GAMESPECIFIC_THESHADOW_FIXL6VOLUMEBUG 
+                            "Fixes problem where french text is shown for the volume adjustment in the L-6 ROM"
+    ID_EDIT_GAMESPECIFIC_THESHADOW_FAMILYMODEII 
+                            "Completely removes ""What the Christ was that?"" sound effect."
+    ID_EDIT_GAMESPECIFIC_THESHADOW_NOFLIPPERSNAG 
+                            "Removes the nagging sound effect ""Flippers... use the flippers"""
+    ID_EDIT_PATCHWPC_VERSIONNUMBER 
+                            "Allows the version NUMBER to be specified such as 4 in the LX-4 or 7 in L-7"
+    ID_EDIT_GAMESPECIFIC_BRIDEOFPINBOT_FIXRESETBUG 
+                            "Fix bug in L-7 where game resets in multiplayer game after billion points awarded."
+    ID_EDIT_GAMESPECIFIC_NOGOODGOPHERS_FIXALLBUGSIN 
+                            "Fix the many many bugs that exist in NGG 1.3 firmware"
+    ID_EDIT_SOUNDTABLE      "Edit the sound table to change or inhibit sound effects"
+    l                       "Edit the game text strings"
+    ID_EDIT_TEXTTABLE       "View and Edit game text strings"
+    ID_EDIT_PATCHWPC_QUICKBOOT 
+                            "Bypasses WPC Power-On-Test code for faster start-ups"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDD_ABOUT_LIMITATIONS   "Release notes."
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_EDIT_GAMESPECIFIC_DEMOLITIONMAN_CREATEHA4ROM 
+                            "Patches LX4 to make HA4 which much be used with L1 sound. Plays ""Enhance Your Calm"" for tilt, et al."
+    ID_EDIT_GAMESPECIFIC_INDIANAJONES_CREATEIJONEHK1 
+                            "HK1 has no hate voice clip, fixed ARK spelling and 'HK' version number."
+    ID_EDIT_GAMESPECIFIC_MEDIEVALMADNESS_CREATEMM109BH 
+                            "Same as factory 1.09H but has the no-free-only modification."
+    ID_EDIT_GAMESPECIFIC_MEDIEVALMADNESS_CREATEMM109CH 
+                            "Same as 1.09BH with the addition of the profanity mode."
+    ID_EDIT_GAMESPECIFIC_THESHADOW_CREATESHADHKH1 
+                            "Removes ""Flippers"" Nag (made obsolete by HKH-3)"
+    ID_EDIT_GAMESPECIFIC_THESHADOW_CREATESHADHKH2 
+                            "Removes ""What the Christ was That"" (made obsolete by HKH-4)"
+    ID_EDIT_GAMESPECIFIC_THESHADOW_CREATESHADHKH3 
+                            "No ""Flippers"" Nag, plus fixed volume text"
+    ID_EDIT_GAMESPECIFIC_THESHADOW_CREATESHADHKH4 
+                            "Removes ""What the Christ was that"" plus fixed volume text"
+    ID_EDIT_GAMESPECIFIC_THESHADOW_CREATESHADHKH5 
+                            "<reserved HKH version number, not used>"
+    ID_EDIT_GAMESPECIFIC_THESHADOW_CREATESHADHKH6 
+                            "Factory L-6 with only the volume bug fixed.  Same version number (6) means no factory reset when installed."
+    ID_EDIT_GAMESPECIFIC_TWILIGHTZONE_CREATETZ94CH 
+                            "Factory 9.4H with no-free-only modification"
+    ID_EDIT_GAMESPECIFIC_CACTUSCANYON_ADDDMDMATCHGRAPHIC 
+                            "Add a CC releated static image to the match sequence"
+    ID_VIEW_ANIMATIONDATA   "View and Edit the WPC Animation Data"
+    ID_EDIT_SWITCHMATRIXTABLE "View and edit the Switch Matrix table data"
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\HexEditor.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#include "afxprint.rc"       // printing/print preview resources
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
