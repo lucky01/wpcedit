@@ -79,6 +79,8 @@
 				OutputFile="Release/WPCEdit.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
+				GenerateDebugInformation="true"
+				AssemblyDebug="0"
 				ProgramDatabaseFile=".\Release/WPCEdit.pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"

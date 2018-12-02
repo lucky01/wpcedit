@@ -11,6 +11,8 @@
 #include "nagdlg.h"
 #include "version.h"
 
+time_t actTime;
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -2820,6 +2822,9 @@ int DMD::Init()
 }
 void DMD::exportCurrent() {
 
+	FILE *file;
+	DWORD tick;
+
 	DMDPlanes* pPlanes = &FullFrameImageData.Planes;
 	unsigned char *Plane_0Ptr      = pPlanes->Plane0.Plane_Data;
 	unsigned char *Plane_0XorFlags = pPlanes->Plane0.Plane_XorFlags;
@@ -2842,8 +2847,8 @@ void DMD::exportCurrent() {
 		// create a RGBA char array from both planes and encode it with LodePNG
 		// then save to disk
 		int w = 128; int h = 32;
-		unsigned char* image = (unsigned char*)malloc( w * h * 4 );
-		memset(image, 0, w*h*4);
+		unsigned char* image = (unsigned char*)malloc( w * h );
+		memset(image, 0, w*h);
 		unsigned char* p = image;
 		unsigned char* pSrc = FullFrameImageData.Planes.Plane0.Plane_Data;
 		unsigned char* pSrc1 = FullFrameImageData.Planes.Plane1.Plane_Data;
@@ -2997,33 +3002,22 @@ void DMD::exportCurrent() {
 				{
                    if ((thisPixel0 == ThisPixel_On) && (thisPixel1 == ThisPixel_On))
                    {
-                      //pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hBright,0,0,SRCCOPY);
-                      //cbPixel2 = '3'; // pixel bright
-					   *(p+3) = 255; // solid
-					   *p = 255;
+ 					   *p = 3;
                    }
                    else if (thisPixel0 == ThisPixel_On)
                    {
-                      //pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hMedium,0,0,SRCCOPY);
-                      //cbPixel2 = '2'; // pixel medium
-					   *(p+3) = 255; // solid
-					   *p = 170;
-
+ 					   *p = 2;
                    }
                    else if (thisPixel1 == ThisPixel_On)
                    {
-                      //pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hDim,0,0,SRCCOPY);
-					   *(p+3) = 255; // solid
-					   *p = 85;
-                      //cbPixel2 = '1'; // pixel dim
+     				   *p = 1;
                    }
                    else
                    {
-                      //pDc->BitBlt(ColumnIndex,RowIndex,PIXEL_WIDTH,PIXEL_HEIGHT,&hOff,0,0,SRCCOPY);
-                      //cbPixel2 = '0'; // pixel off
-                   }
+     				   *p = 0;
+				   }
 				}
-				p += 4;
+				p ++;
 			} // for mask
 			Plane_0Ptr++;
 			Plane_1Ptr++;
@@ -3035,15 +3029,53 @@ void DMD::exportCurrent() {
 			Plane_1XorBits++;
             Plane_0Previous++;
             Plane_1Previous++;
-			
+
 		}
        
 	}
+	// write raw file format
+	char filename[100];
+	strftime(filename, sizeof(filename), "%d%m%y_%H%M%S_wpcedit_dump.raw", gmtime(&actTime));
+	file = fopen(filename, "rb");
+	if (file == NULL)
+	{
+		file = fopen(filename, "wb");
+		fputc(0x52, file);
+		fputc(0x41, file);
+		fputc(0x57, file);
+		fputc(0x00, file);
+		fputc(0x01, file);
+		fputc(128, file);
+		fputc(32, file);
+		fputc(3, file);
+	} else {
+		fclose(file);
+		file = fopen(filename, "ab");
+	}	
+	tick = GetTickCount();
+	fwrite(&tick, 1, 4, file);
+	fwrite(PreviousPlaneDataPane1, sizeof(char), 512, file);
+	fwrite(PreviousPlaneDataPane0, sizeof(char), 512, file);
+	fwrite(PreviousPlaneDataPane0, sizeof(char), 512, file);
+	fclose(file);
 
-
-		char filename[100];
-		sprintf(filename, "export-%04d.png", FullFrameImageData.CurrentImageIndex );
-		free((void*)image);
+	// write pinmame txt format
+	strftime(filename, sizeof(filename), "%d%m%y_%H%M%S_wpcedit_dump.txt", gmtime(&actTime));
+	file = fopen(filename, "a");
+	if (file) {
+	  fprintf(file, "0x%08x\n", tick);
+	  for (int jj = 0; jj < h; jj++) {
+		  for (int ii = 0; ii < w; ii++)
+		  {
+			  const UINT8 col = image[jj*w + ii];
+			  fprintf(file, "%01x", col);
+		  }
+		  fprintf(file, "\n");
+	  }
+	  fprintf(file, "\n");
+	  fclose(file);
+	}
+	free((void*)image);
 
 	}
 
@@ -4929,6 +4961,7 @@ void DMD::OnCheckSkipped()
 }
 
 void DMD::OnCheckExport() {
+	actTime = time(NULL);
 }
 
 void DMD::OnCheckXored() 
